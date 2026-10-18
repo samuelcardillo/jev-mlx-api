@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "name": "JEV MLX staged INT8 on Apple M5",
+  "mlx_repository": "https://github.com/ml-explore/mlx.git",
+  "mlx_base_version": "0.32.4",
+  "mlx_base_commit": "36969c094354086e15d2a327a9c50feb20b9cf11",
+  "staged_patch_repository": "https://github.com/precisit/mlx",
+  "staged_patch_commits": [
+    "bb8189463b4c63474b0b069eb487f160fdc4cbdf",
+    "d03fed7b6965864b61c7c10fc48277e38c1a272f"
+  ],
+  "patch_order": [
+    "mlx-v0.32.4-staged-8bit-qmm.patch",
+    "mlx-jit-reuse-release-metallib.patch",
+    "mlx-jit-attention-dsplit-arity.patch"
+  ],
+  "python_version": "3.12.15",
+  "mlx_vlm_commit": "597941d0d4eb900f1d066eba8d89abf474c0dd42",
+  "mlx_vlm_version": "0.7.7",
+  "stock_metallib_sha256": "c6d7a3facb83568f6e4cb2cf4a8c736ee29302571a48343cb9a3a4d1cd3e3893",
+  "runtime_requirements_sha256": "9e0e8c785230fdbb3044d0c5dff3079b086b4670b5e79668a7d5bc4247323007",
+  "files": [
+    {
+      "name": "mlx-v0.32.4-staged-8bit-qmm.patch",
+      "sha256": "c79b0c5d53a5bfb474dec610cf08fa787510aabaffe0ba936a3ffb340a6735f6"
+    },
+    {
+      "name": "mlx-jit-reuse-release-metallib.patch",
+      "sha256": "245a4da5ce28fc67e4906b5c3aeb235246540402dfa229aba7ca4338c67d5b02"
+    },
+    {
+      "name": "mlx-jit-attention-dsplit-arity.patch",
+      "sha256": "00d112426933fcf8580053eb94cf6298be5471889ce1691c26af14c2cbeb1ae5"
+    },
+    {
+      "name": "kernel_check.py",
+      "sha256": "5b980a39a06d97eec154affab173dfa534a50afd026ff98d500de553375ccf0d"
+    },
+    {
+      "name": "build-requirements.txt",
+      "sha256": "89edaee34d408f75f6983a46a77ff3095c940fcd524a3beb290ce8d47bd0f121"
+    },
+    {
+      "name": "MLX-LICENSE.txt",
+      "sha256": "ccfab7ccb2ea306f71531c8ca77bb55507606cd90768b1e32b8b52ab5b48cf01"
+    }
+  ],
+  "support": {
+    "cpu_family": "Apple M5",
+    "minimum_macos": "26.2",
+    "minimum_sdk": "26.5",
+    "preferred_sdk": "26.5",
+    "metal_language": 400
+  },
+  "builder_packages": {
+    "cmake": "3.31.10",
+    "setuptools": "84.0.0",
+    "wheel": "0.48.0",
+    "nanobind": "3.1.0",
+    "packaging": "26.3",
+    "typing-extensions": "4.16.0"
+  },
+  "validation": {
+    "script": "kernel_check.py",
+    "group_size": 64,
+    "weight_bits": 8,
+    "activation_dtype": "bfloat16",
+    "relative_l2_limit": 0.05,
+    "requires_eligible_output_change": true,
+    "requires_short_input_bitwise_parity": true,
+    "requires_256_dimension_attention_jit": true,
+    "attention_sequence_length": 1024
+  },
+  "note": "Experimental reduced-precision computation. These patches preserve stored 8-bit weights but quantize activations and stage weights as int8. Kernel gates do not establish general model accuracy or calibration."
+}

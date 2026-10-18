@@ -1,0 +1,1341 @@
+diff --git a/docs/src/usage/environment_variables.rst b/docs/src/usage/environment_variables.rst
+index 95ee3bda..1e534910 100644
+--- a/docs/src/usage/environment_variables.rst
++++ b/docs/src/usage/environment_variables.rst
+@@ -26,6 +26,18 @@ General
+    on supported hardware. The default is ``1``. Set it to ``0`` to keep these
+    operations in full ``float32`` precision. See :doc:`precision`.
+ 
++.. envvar:: MLX_QMM_INT8
++
++   Run affine quantized matmuls on 8-bit integer weights and activations on
++   supported hardware. The default is ``0``. Set it to ``1``, ``4`` or ``2``
++   to enable it, from most to least precise. See :doc:`precision`.
++
++.. envvar:: MLX_QMM_FP8
++
++   Run ``mxfp4`` and ``mxfp8`` quantized matmuls on 8-bit floating point
++   weights and activations on supported hardware. The default is ``0``. See
++   :doc:`precision`.
++
+ Distributed
+ -----------
+ 
+diff --git a/docs/src/usage/precision.rst b/docs/src/usage/precision.rst
+index 31c3f2ef..efecaf93 100644
+--- a/docs/src/usage/precision.rst
++++ b/docs/src/usage/precision.rst
+@@ -31,3 +31,33 @@ To disable Winograd, set :envvar:`MLX_CONV_WINOGRAD` to ``0``:
+ .. code-block:: shell
+ 
+   MLX_CONV_WINOGRAD=0 python my_script.py
++
++8-bit Quantized Matmul
++----------------------
++
++Quantized matmuls dequantize the weights to the type of the input and
++multiply in floating point. On hardware with dedicated
++matrix-multiplication units MLX can instead round the weights and the input
++to 8 bits and multiply those, which is faster and less precise. This is off
++by default.
++
++For affine quantized weights set :envvar:`MLX_QMM_INT8`. The weights and the
++input are rounded to 8-bit integers with one scale per row. With ``1`` the
++scale of the input is refined for every block of 64 elements, with ``4`` for
++every four blocks, and ``2`` uses the row scale alone:
++
++.. code-block:: shell
++
++  MLX_QMM_INT8=1 python my_script.py
++
++For ``mxfp4`` and ``mxfp8`` weights set :envvar:`MLX_QMM_FP8`. The weights
++and the input are multiplied as 8-bit floating point numbers. This needs
++Metal 4.1, a build of MLX that targets macOS 27 or later:
++
++.. code-block:: shell
++
++  MLX_QMM_FP8=1 python my_script.py
++
++Expect a relative difference of one to a few percent from the floating point
++result. Only products of 64 rows or more with transposed weights take these
++paths. Both variables are read each time a quantized matmul is built.
+diff --git a/mlx/backend/metal/device.cpp b/mlx/backend/metal/device.cpp
+index 493e8e31..b388627f 100644
+--- a/mlx/backend/metal/device.cpp
++++ b/mlx/backend/metal/device.cpp
+@@ -996,4 +996,25 @@ bool is_nax_available() {
+ #endif
+ }
+ 
++// The fp8 kernels need Metal 4.1 and a GPU with a fast fp8 matmul
++bool is_nax_fp8_available() {
++#if defined(MLX_METAL_NO_NAX) || defined(MLX_METAL_NO_FP8)
++  return false;
++#else
++  auto _check_fp8 = []() {
++    bool can_use_fp8 = false;
++    if (__builtin_available(macOS 27, iOS 27, tvOS 27, visionOS 27, *)) {
++      can_use_fp8 = is_nax_available();
++    }
++    auto& d = metal::device(mlx::core::Device::gpu);
++    auto arch = d.get_architecture().back();
++    auto gen = d.get_architecture_gen();
++    can_use_fp8 &= arch != 'p' && gen >= 18;
++    return can_use_fp8;
++  };
++  static bool is_nax_fp8_available_ = _check_fp8();
++  return is_nax_fp8_available_;
++#endif
++}
++
+ } // namespace mlx::core::metal
+diff --git a/mlx/backend/metal/device.h b/mlx/backend/metal/device.h
+index 305a35a7..af141580 100644
+--- a/mlx/backend/metal/device.h
++++ b/mlx/backend/metal/device.h
+@@ -261,5 +261,6 @@ std::unordered_map<int, CommandEncoder>& get_global_command_encoders();
+ NS::SharedPtr<NS::AutoreleasePool> new_scoped_memory_pool();
+ 
+ bool is_nax_available();
++bool is_nax_fp8_available();
+ 
+ } // namespace mlx::core::metal
+diff --git a/mlx/backend/metal/kernels/CMakeLists.txt b/mlx/backend/metal/kernels/CMakeLists.txt
+index 355c763a..07624e18 100644
+--- a/mlx/backend/metal/kernels/CMakeLists.txt
++++ b/mlx/backend/metal/kernels/CMakeLists.txt
+@@ -182,6 +182,10 @@ if(NOT MLX_METAL_JIT)
+                  gated_delta_nax_ops.h ${STEEL_NAX_HEADERS})
+     build_kernel(fp_quantized_nax fp4.h fp8.h fp_quantized_nax.h
+                  ${STEEL_NAX_HEADERS})
++    if(MLX_METAL_VERSION LESS 410)
++      # The fp8 kernels in fp_quantized_nax need Metal 4.1
++      target_compile_definitions(mlx PRIVATE MLX_METAL_NO_FP8)
++    endif()
+ 
+     build_kernel(steel/attn/kernels/steel_attention_nax
+                  ${STEEL_NAX_ATTN_HEADERS})
+diff --git a/mlx/backend/metal/kernels/fp_quantized_nax.h b/mlx/backend/metal/kernels/fp_quantized_nax.h
+index f843c999..dbbdd855 100644
+--- a/mlx/backend/metal/kernels/fp_quantized_nax.h
++++ b/mlx/backend/metal/kernels/fp_quantized_nax.h
+@@ -1049,3 +1049,313 @@ template <
+     });
+   });
+ }
++
++// Staged fp8 qmm: x is rounded to fp8 (E4M3) with a power of two scale per row,
++// w is moved to the largest scale of its row, the product is summed in float.
++
++#if defined(__METAL_VERSION__) && (__METAL_VERSION__ >= 410)
++
++// Quantize each row of x to fp8 with a power of two scale, one threadgroup per
++// row. The output is stored as [M / 64][K / 64][64][64].
++template <typename T>
++[[kernel]] void fp_qmm_fp8_quantize_x(
++    const device T* x [[buffer(0)]],
++    device uint8_t* x8 [[buffer(1)]],
++    device float* x_scale [[buffer(2)]],
++    const constant int& K [[buffer(3)]],
++    const constant int& M [[buffer(4)]],
++    uint3 tid [[threadgroup_position_in_grid]],
++    uint lid [[thread_index_in_threadgroup]],
++    uint simd_gid [[simdgroup_index_in_threadgroup]],
++    uint simd_lid [[thread_index_in_simdgroup]],
++    uint n_simd [[simdgroups_per_threadgroup]]) {
++  constexpr int BM = 64;
++  constexpr int BK = 64;
++
++  threadgroup float shared[33];
++
++  const int row = tid.y;
++  const int n_blocks = K / BK;
++  const size_t tile = size_t(row / BM) * n_blocks + lid;
++  device packed_uchar4* q =
++      (device packed_uchar4*)(x8 + (tile * BM + row % BM) * BK);
++
++  if (row >= M) {
++    for (int i = 0; i < BK / 4; i++) {
++      q[i] = uchar4(0);
++    }
++    return;
++  }
++
++  x += size_t(row) * K + lid * BK;
++
++  float vals[BK];
++  float block_max = 0.0f;
++  for (int i = 0; i < BK; i++) {
++    vals[i] = float(x[i]);
++    block_max = max(block_max, fabs(vals[i]));
++  }
++  const float simd_row_max = simd_max(block_max);
++  if (simd_lid == 0) {
++    shared[simd_gid] = simd_row_max;
++  }
++  threadgroup_barrier(mem_flags::mem_threadgroup);
++
++  if (lid == 0) {
++    float row_max = shared[0];
++    for (uint i = 1; i < n_simd; i++) {
++      row_max = max(row_max, shared[i]);
++    }
++
++    // Smallest power of two sx with row_max / sx <= F8E4M3_MAX (1.75 * 2^8)
++    const uint b = as_type<uint>(max(row_max, 1e-30f));
++    const uint e = (b >> 23) - 8 + ((b & 0x7FFFFFu) > 0x600000u ? 1 : 0);
++    shared[32] = as_type<float>((254u - e) << 23);
++    x_scale[row] = as_type<float>(e << 23);
++  }
++  threadgroup_barrier(mem_flags::mem_threadgroup);
++
++  const float inv = shared[32];
++
++  for (int i = 0; i < BK / 4; i++) {
++    const float4 v =
++        float4(vals[4 * i], vals[4 * i + 1], vals[4 * i + 2], vals[4 * i + 3]);
++    q[i] = metal::pack<metal::metal_fp8_e4m3_format>(v * inv).as_storage_type();
++  }
++}
++
++// 4 fp8 codes times 2^-d, d >= 0, rounded to nearest even. Below the normal
++// range the significand is shifted into the subnormals.
++inline uint qmm_fp8_shift(uint w, int d) {
++  const int4 c = int4(w & 255u, (w >> 8) & 255u, (w >> 16) & 255u, w >> 24);
++  const int4 sign = c & 0x80;
++  const int4 e = (c >> 3) & 15;
++  const int4 m = c & 7;
++  const int4 e1 = max(e, int4(1));
++  const int4 sig = m + select(int4(0), int4(8), e > 0);
++  const int4 ne = e1 - d;
++  const int4 sh = clamp(d - e1 + 1, int4(0), int4(5));
++  const int4 rounding = (int4(1) << sh) >> 1;
++  const int4 r =
++      select(sig, (sig + rounding - 1 + ((sig >> sh) & 1)) >> sh, sh > 0);
++  const int4 v = sign | select(r, select(r, (ne << 3) | m, ne >= 1), sig >= 8);
++  return as_type<uint>(uchar4(v));
++}
++
++// Stage 32 weights of one quantization group as fp8 at the scale of their
++// row, which is d powers of two above the scale of the group
++template <int bits>
++inline void
++qmm_fp8_stage(const device uint8_t* src, int d, threadgroup uint8_t* dst) {
++  static_assert(
++      bits == 4 || bits == 8, "Template undefined for bits not in {4, 8}");
++
++  if constexpr (bits == 8) {
++    uint4 wa = *(const device packed_uint4*)src;
++    uint4 wb = *(const device packed_uint4*)(src + 16);
++
++    // While every exponent field stays above 0 the shift is a subtraction in
++    // that field
++    const uint4 top = uint4(0x80808080u);
++    const uint4 thr = uint4(uint(d + 1) * 0x08080808u);
++    const bool plain = d < 15 &&
++        all((((wa & 0x78787878u) + top - thr) & top) == top) &&
++        all((((wb & 0x78787878u) + top - thr) & top) == top);
++    if (plain || d == 0) {
++      wa -= uint4(uint(d) * 0x08080808u);
++      wb -= uint4(uint(d) * 0x08080808u);
++    } else {
++      for (int i = 0; i < 4; i++) {
++        wa[i] = qmm_fp8_shift(wa[i], d);
++        wb[i] = qmm_fp8_shift(wb[i], d);
++      }
++    }
++
++    *(threadgroup packed_uint4*)dst = wa;
++    *(threadgroup packed_uint4*)(dst + 16) = wb;
++  } else {
++    // Decode as fp4_e2m1 does, the scale is exact
++    const float scale = 16384.0f * as_type<float>(uint(127 - min(d, 40)) << 23);
++
++    STEEL_PRAGMA_UNROLL
++    for (int i = 0; i < 8; i++) {
++      const uint p = *(const device uint16_t*)(src + 2 * i);
++      const uint4 c = uint4(p & 15u, (p >> 4) & 15u, (p >> 8) & 15u, p >> 12);
++      const float4 mag = float4(as_type<half4>(ushort4((c & 7u) << 9))) * scale;
++      const float4 v = select(mag, -mag, (c & 8u) != 0u);
++      *(threadgroup packed_uchar4*)(dst + 4 * i) =
++          metal::pack<metal::metal_fp8_e4m3_format>(v).as_storage_type();
++    }
++  }
++}
++
++// x @ w.T in tiles of 64 by 64 with one fp8 matmul per simdgroup, the fp8
++// operands are read from memory. With aligned, M and N are multiples of 64.
++template <typename T, const int bits, const bool aligned>
++[[kernel]] void fp_qmm_t_nax_fp8(
++    const device uint32_t* w [[buffer(0)]],
++    const device uint8_t* scales [[buffer(1)]],
++    device uint8_t* x8 [[buffer(2)]],
++    const device float* x_scale [[buffer(3)]],
++    device T* y [[buffer(4)]],
++    const constant int& K_ [[buffer(5)]],
++    const constant int& N_ [[buffer(6)]],
++    const constant int& M_ [[buffer(7)]],
++    uint3 tid [[threadgroup_position_in_grid]],
++    uint lid [[thread_index_in_threadgroup]],
++    uint simd_gid [[simdgroup_index_in_threadgroup]]) {
++  constexpr int BM = 64;
++  constexpr int BN = 64;
++  constexpr int BK = 64;
++  constexpr int WM = 2;
++  constexpr int WN = 2;
++  constexpr int group_size = 32;
++
++  // Each thread stages VPT weights of one row, all in one quantization group
++  constexpr int VPT = (BN * BK) / (WM * WN * SIMD_SIZE);
++  static_assert(
++      VPT == group_size && BK == 2 * VPT,
++      "Two threads stage a row, one quantization group of the weights each");
++
++  constexpr int SM = BM / WM;
++  constexpr int SN = BN / WN;
++
++  typedef metal::metal_fp8_e4m3_format fp8_t;
++  typedef metal::dextents<int32_t, 2> extents_t;
++  typedef metal::tensor<device fp8_t, extents_t, metal::tensor_inline> x_t;
++  typedef metal::tensor<threadgroup fp8_t, extents_t, metal::tensor_inline> w_t;
++
++  constexpr auto desc = mpp::tensor_ops::matmul2d_descriptor(
++      SM,
++      SN,
++      BK,
++      false,
++      true,
++      true,
++      mpp::tensor_ops::matmul2d_descriptor::mode::multiply_accumulate);
++  mpp::tensor_ops::matmul2d<desc, metal::execution_simdgroup> gemm_op;
++
++  threadgroup uint Ws_storage[(BN * BK) / 4];
++  threadgroup uint8_t* Ws = (threadgroup uint8_t*)Ws_storage;
++  threadgroup uint8_t Ss[2 * BN];
++  threadgroup float Wscales[BN];
++
++  const int K = K_;
++  const int N = N_;
++  const int M = M_;
++  (void)M;
++
++  const int y_row = tid.y * BM;
++  const int y_col = tid.x * BN;
++  const int tm = SM * (simd_gid / WN);
++  const int tn = SN * (simd_gid % WN);
++
++  // The part of the weight tile this thread stages
++  const int nl = lid / 2;
++  const int kl = (lid % 2) * VPT;
++  const int n = y_col + nl;
++  const bool valid = aligned || n < N;
++
++  threadgroup uint8_t* dst = Ws + nl * BK + kl;
++  const device uint8_t* wl = (const device uint8_t*)w;
++  if (valid) {
++    wl += (size_t(n) * K + kl) * bits / 8;
++    scales += size_t(n) * (K / group_size);
++  } else {
++    for (int i = 0; i < VPT / 4; i++) {
++      *(threadgroup uint*)(dst + 4 * i) = 0;
++    }
++  }
++
++  // The largest scale of a row of the weights, each of its two threads
++  // looks at half of the row
++  {
++    uint8_t s = 0;
++    if (valid) {
++      const int n_scales = K / BK;
++      const device uint8_t* sp = scales + (lid % 2) * n_scales;
++      uchar4 s4 = uchar4(0);
++      int g = 0;
++      for (; g + 4 <= n_scales; g += 4) {
++        s4 = max(s4, uchar4(*(const device packed_uchar4*)(sp + g)));
++      }
++      s = max(max(s4.x, s4.y), max(s4.z, s4.w));
++      for (; g < n_scales; g++) {
++        s = max(s, sp[g]);
++      }
++    }
++    Ss[lid] = s;
++  }
++  threadgroup_barrier(mem_flags::mem_threadgroup);
++
++  const int row_scale = max(Ss[lid], Ss[lid ^ 1]);
++  if (kl == 0) {
++    Wscales[nl] = dequantize_scale<float, 32>(uint8_t(row_scale));
++  }
++  // The scales this thread stages with
++  scales += kl / group_size;
++
++  // x8 has one BM x BK block per row tile and BK columns of K
++  x8 += (size_t(tid.y) * (K / BK) * BM + tm) * BK;
++
++  w_t Wtile(Ws + tn * BK, extents_t(BK, SN));
++  auto Dtile =
++      gemm_op.template get_destination_cooperative_tensor<x_t, w_t, float>();
++  for (ushort i = 0; i < Dtile.get_capacity(); i++) {
++    Dtile[i] = 0.0f;
++  }
++
++  for (int k = 0; k < K; k += BK) {
++    threadgroup_barrier(mem_flags::mem_threadgroup);
++
++    if (valid) {
++      qmm_fp8_stage<bits>(
++          wl + k * bits / 8, row_scale - int(scales[k / group_size]), dst);
++    }
++
++    threadgroup_barrier(mem_flags::mem_threadgroup);
++
++    x_t Xtile(x8, extents_t(BK, SM));
++    gemm_op.run(Xtile, Wtile, Dtile);
++
++    x8 += BM * BK;
++  }
++
++  // A 64-bit index from the corner of the tile, a 32-bit one is slower
++  device T* y_tile = y + (size_t(y_row + tm) * size_t(N) + size_t(y_col + tn));
++
++  // A test on the stores of a cooperative tensor is slow, even one for the
++  // whole tile, so there is none when the output has whole tiles only
++  if constexpr (aligned) {
++    for (ushort i = 0; i < Dtile.get_capacity(); i++) {
++      if (Dtile.is_valid_element(i)) {
++        const auto pos = Dtile.get_multidimensional_index(i);
++        const int r = y_row + tm + int(pos[1]);
++        const int c = tn + int(pos[0]);
++        y_tile[size_t(pos[1]) * size_t(N) + size_t(pos[0])] =
++            static_cast<T>(Dtile[i] * x_scale[r] * Wscales[c]);
++      }
++    }
++  } else {
++    const bool interior = (y_row + tm + SM <= M) && (y_col + tn + SN <= N);
++    dispatch_bool(interior, [&](auto kInterior) {
++      for (ushort i = 0; i < Dtile.get_capacity(); i++) {
++        if (!Dtile.is_valid_element(i)) {
++          continue;
++        }
++        const auto pos = Dtile.get_multidimensional_index(i);
++        const int r = y_row + tm + int(pos[1]);
++        const int c = tn + int(pos[0]);
++        if constexpr (kInterior.value) {
++          y_tile[size_t(pos[1]) * size_t(N) + size_t(pos[0])] =
++              static_cast<T>(Dtile[i] * x_scale[r] * Wscales[c]);
++        } else if (r < M && y_col + c < N) {
++          y_tile[size_t(pos[1]) * size_t(N) + size_t(pos[0])] =
++              static_cast<T>(Dtile[i] * x_scale[r] * Wscales[c]);
++        }
++      }
++    });
++  }
++}
++
++#endif // __METAL_VERSION__ >= 410
+diff --git a/mlx/backend/metal/kernels/fp_quantized_nax.metal b/mlx/backend/metal/kernels/fp_quantized_nax.metal
+index b6cc7813..9642f2c9 100644
+--- a/mlx/backend/metal/kernels/fp_quantized_nax.metal
++++ b/mlx/backend/metal/kernels/fp_quantized_nax.metal
+@@ -119,4 +119,33 @@ instantiate_quantized_types(float)
+ instantiate_quantized_types(bfloat16_t)
+ instantiate_quantized_types(float16_t)
+ instantiate_quantized_qmm_hgs(bfloat16_t)
++
++// Staged fp8 qmm
++#if defined(__METAL_VERSION__) && (__METAL_VERSION__ >= 410)
++#define instantiate_qmm_fp8_aligned(type, aligned)  \
++  instantiate_kernel(                              \
++      "mxfp8_qmm_t_nax_fp8_" #type "_al_" #aligned, \
++      fp_qmm_t_nax_fp8,                            \
++      type,                                        \
++      8,                                           \
++      aligned)                                     \
++  instantiate_kernel(                              \
++      "mxfp4_qmm_t_nax_fp8_" #type "_al_" #aligned, \
++      fp_qmm_t_nax_fp8,                            \
++      type,                                        \
++      4,                                           \
++      aligned)
++
++#define instantiate_qmm_fp8(type)       \
++  instantiate_kernel(                   \
++      "fp_qmm_fp8_quantize_x_" #type,   \
++      fp_qmm_fp8_quantize_x,            \
++      type)                             \
++  instantiate_qmm_fp8_aligned(type, true) \
++  instantiate_qmm_fp8_aligned(type, false)
++
++instantiate_qmm_fp8(float)
++instantiate_qmm_fp8(float16_t)
++instantiate_qmm_fp8(bfloat16_t)
++#endif
+     // clang-format on
+diff --git a/mlx/backend/metal/kernels/quantized_nax.h b/mlx/backend/metal/kernels/quantized_nax.h
+index 95f26868..25fd1d94 100644
+--- a/mlx/backend/metal/kernels/quantized_nax.h
++++ b/mlx/backend/metal/kernels/quantized_nax.h
+@@ -1767,3 +1767,349 @@ template <
+     });
+   });
+ }
++
++// Staged int8 qmm: weights and activations are rounded to int8 with one scale
++// per row and the product is accumulated in int32.
++
++// Fixed point bits of the weight fold w8 = (q * a + b) >> QMM_I8_FRAC
++MLX_MTL_CONST int QMM_I8_FRAC = 16;
++
++// Unpack 4 consecutive codes, p points at the start of a pack
++template <int bits>
++inline int4 qmm_i8_unpack4(const device uint8_t* p, int i) {
++  static_assert(
++      bits == 2 || bits == 3 || bits == 4 || bits == 5 || bits == 6 ||
++          bits == 8,
++      "Template undefined for bits not in {2, 3, 4, 5, 6, 8}");
++
++  constexpr uint mask = (1u << bits) - 1u;
++
++  uint w;
++  if (bits == 4) {
++    w = *(const device uint16_t*)(p + 2 * i);
++  } else if (bits == 8) {
++    w = *(const device uint32_t*)(p + 4 * i);
++  } else {
++    const int offset = 4 * bits * i;
++    p += offset >> 3;
++    w = p[0];
++    if (bits > 2) {
++      w |= uint(p[1]) << 8;
++    }
++    if (bits > 4) {
++      w |= uint(p[2]) << 16;
++    }
++    w >>= (offset & 7);
++  }
++
++  return int4(
++      w & mask,
++      (w >> bits) & mask,
++      (w >> (2 * bits)) & mask,
++      (w >> (3 * bits)) & mask);
++}
++
++// The scale of each row of the weights and its fixed point reciprocal
++template <typename T, const int bits>
++[[kernel]] void affine_qmm_i8_row_scales(
++    const device T* scales [[buffer(0)]],
++    const device T* biases [[buffer(1)]],
++    device float* w_scale [[buffer(2)]],
++    device float* w_inv [[buffer(3)]],
++    const constant int& K_g [[buffer(4)]],
++    uint tid [[thread_position_in_grid]]) {
++  constexpr float q_max = float((1 << bits) - 1);
++
++  scales += size_t(tid) * K_g;
++  biases += size_t(tid) * K_g;
++
++  float extent = 0.0f;
++  for (int g = 0; g < K_g; g++) {
++    const float s = float(scales[g]);
++    const float b = float(biases[g]);
++    extent = max(extent, max(fabs(b), fabs(fma(s, q_max, b))));
++  }
++
++  const float sw = max(extent * (1.0f / 127.0f), 1e-30f);
++  w_scale[tid] = sw;
++  w_inv[tid] = float(1 << QMM_I8_FRAC) / sw;
++}
++
++// Quantize each row of x to int8, one threadgroup per row. A block of 64 has
++// the row scale / 2^e, one e per x_span blocks. Output [M/64][K/64][64][64].
++template <typename T>
++[[kernel]] void affine_qmm_i8_quantize_x(
++    const device T* x [[buffer(0)]],
++    device int8_t* x8 [[buffer(1)]],
++    device float* x_scale [[buffer(2)]],
++    device uint8_t* x_exp [[buffer(3)]],
++    const constant int& K [[buffer(4)]],
++    const constant int& M [[buffer(5)]],
++    const constant int& max_exp [[buffer(6)]],
++    const constant int& x_span [[buffer(7)]],
++    uint3 tid [[threadgroup_position_in_grid]],
++    uint lid [[thread_index_in_threadgroup]],
++    uint simd_gid [[simdgroup_index_in_threadgroup]],
++    uint simd_lid [[thread_index_in_simdgroup]],
++    uint n_simd [[simdgroups_per_threadgroup]]) {
++  constexpr int BM = 64;
++  constexpr int BK = 64;
++
++  threadgroup float shared[33];
++
++  const int row = tid.y;
++  const int n_blocks = K / BK;
++  const size_t tile = size_t(row / BM) * n_blocks + lid;
++  device char4* q = (device char4*)(x8 + (tile * BM + row % BM) * BK);
++
++  // The exponent of the first block is stored twice so that the matmul can
++  // read the change from the block before
++  x_exp += size_t(row) * (n_blocks + 1);
++
++  if (row >= M) {
++    for (int i = 0; i < BK / 4; i++) {
++      q[i] = char4(0);
++    }
++    x_exp[lid + 1] = 0;
++    if (lid == 0) {
++      x_exp[0] = 0;
++    }
++    return;
++  }
++
++  x += size_t(row) * K + lid * BK;
++
++  float vals[BK];
++  float block_max = 0.0f;
++  for (int i = 0; i < BK; i++) {
++    vals[i] = float(x[i]);
++    block_max = max(block_max, fabs(vals[i]));
++  }
++  const float simd_row_max = simd_max(block_max);
++  if (simd_lid == 0) {
++    shared[simd_gid] = simd_row_max;
++  }
++
++  // The blocks that share an exponent are threads next to each other
++  float span_max = block_max;
++  if (x_span >= 2) {
++    span_max = max(span_max, simd_shuffle_xor(span_max, ushort(1)));
++  }
++  if (x_span >= 4) {
++    span_max = max(span_max, simd_shuffle_xor(span_max, ushort(2)));
++  }
++  threadgroup_barrier(mem_flags::mem_threadgroup);
++
++  if (lid == 0) {
++    float row_max = shared[0];
++    for (uint i = 1; i < n_simd; i++) {
++      row_max = max(row_max, shared[i]);
++    }
++    shared[32] = max(row_max * (1.0f / 127.0f), 1e-12f);
++  }
++  threadgroup_barrier(mem_flags::mem_threadgroup);
++
++  const float sx = shared[32];
++  const float inv = 1.0f / sx;
++
++  // Halve the scale of these blocks while their values still fit in int8
++  float t = span_max * inv;
++  int e = 0;
++  while (e < max_exp && t * 2.0f < 127.5f) {
++    t *= 2.0f;
++    e++;
++  }
++  const float gain = float(1 << e);
++
++  for (int i = 0; i < BK / 4; i++) {
++    const float4 v =
++        float4(vals[4 * i], vals[4 * i + 1], vals[4 * i + 2], vals[4 * i + 3]);
++    q[i] = char4(clamp(int4(round((v * inv) * gain)), -127, 127));
++  }
++
++  x_exp[lid + 1] = e;
++  if (lid == 0) {
++    x_exp[0] = e;
++  }
++  // The results are in the units of the last block
++  if (lid == n_blocks - 1) {
++    x_scale[row] = sx / gain;
++  }
++}
++
++// Same structure as qmm_t_nax_tgp_impl, with int8 tiles and an int32 sum.
++// x_span is 0 for one scale per row of x, or the blocks sharing an exponent.
++template <typename T, const int group_size, const int bits, const int x_span>
++[[kernel]] void affine_qmm_t_nax_i8(
++    const device uint32_t* w [[buffer(0)]],
++    const device T* scales [[buffer(1)]],
++    const device T* biases [[buffer(2)]],
++    const device float* w_inv [[buffer(3)]],
++    const device float* w_scale [[buffer(4)]],
++    const device int8_t* x8 [[buffer(5)]],
++    const device float* x_scale [[buffer(6)]],
++    device T* y [[buffer(7)]],
++    const device uint8_t* x_exp [[buffer(8)]],
++    const constant int& K [[buffer(9)]],
++    const constant int& N [[buffer(10)]],
++    const constant int& M [[buffer(11)]],
++    uint3 tid [[threadgroup_position_in_grid]],
++    uint lid [[thread_index_in_threadgroup]],
++    uint simd_gid [[simdgroup_index_in_threadgroup]]) {
++  constexpr int BM = 64;
++  constexpr int BN = 64;
++  constexpr int BK = 64;
++  constexpr int WM = 2;
++  constexpr int WN = 2;
++  constexpr int BK_padded = BK + 16;
++
++  // Each thread folds VPT weights of one row, all in one quantization group
++  constexpr int VPT = (BN * BK) / (WM * WN * SIMD_SIZE);
++  static_assert(
++      VPT % 8 == 0 && BK % VPT == 0 && group_size % VPT == 0,
++      "A thread stages whole packs of the weights within one group");
++
++  constexpr int pack_factor = get_pack_factor<bits, 8>();
++  constexpr int bytes_per_pack = get_bytes_per_pack<bits>();
++
++  threadgroup uint Ws_storage[(BN * BK_padded) / 4];
++  threadgroup int8_t* Ws = (threadgroup int8_t*)Ws_storage;
++
++  constexpr short SM = BM / WM;
++  constexpr short SN = BN / WN;
++  constexpr short SK = 32;
++
++  constexpr short TM = SM / 16;
++  constexpr short TN = SN / 16;
++  constexpr short TK = SK / 16;
++
++  const int y_row = tid.y * BM;
++  const int y_col = tid.x * BN;
++  const short tm = SM * (simd_gid / WN);
++  const short tn = SN * (simd_gid % WN);
++
++  // The part of the weight tile this thread stages
++  const int nl = lid / (BK / VPT);
++  const int kl = (lid % (BK / VPT)) * VPT;
++  const int n = y_col + nl;
++  const bool valid = n < N;
++
++  threadgroup int8_t* dst = Ws + nl * BK_padded + kl;
++  const device uint8_t* wl = (const device uint8_t*)w;
++  float inv = 0.0f;
++  if (valid) {
++    wl += size_t(n) * (K / pack_factor) * bytes_per_pack;
++    scales += size_t(n) * (K / group_size);
++    biases += size_t(n) * (K / group_size);
++    inv = w_inv[n];
++  } else {
++    for (int i = 0; i < VPT / 4; i++) {
++      *(threadgroup uint*)(dst + 4 * i) = 0;
++    }
++  }
++
++  // x8 has one BM x BK block per row tile and BK columns of K
++  x8 += (size_t(tid.y) * (K / BK) * BM + tm) * BK;
++
++  // A thread has 8 values of the accumulator for each of 4 rows
++  constexpr int exp_ld = BaseNAXFrag::kElemRowsJump;
++  const int x_exp_stride = K / BK + 1;
++  x_exp += size_t(y_row + tm + BaseNAXFrag::get_coord().y) * x_exp_stride;
++
++  NAXTile<int32_t, TM, TN> Dtile;
++  Dtile.clear();
++
++  for (int k = 0; k < K; k += BK) {
++    threadgroup_barrier(mem_flags::mem_threadgroup);
++
++    if (valid) {
++      const int kk = k + kl;
++      const int a = int(rint(float(scales[kk / group_size]) * inv));
++      const int b = int(rint(float(biases[kk / group_size]) * inv)) +
++          (1 << (QMM_I8_FRAC - 1));
++      const device uint8_t* p = wl + (kk / pack_factor) * bytes_per_pack;
++
++      STEEL_PRAGMA_UNROLL
++      for (int i = 0; i < VPT / 4; i++) {
++        const int4 q = qmm_i8_unpack4<bits>(p, i);
++        const int4 v = (q * a + b) >> QMM_I8_FRAC;
++        *(threadgroup uint*)(dst + 4 * i) = as_type<uint>(char4(v));
++      }
++    }
++
++    threadgroup_barrier(mem_flags::mem_threadgroup);
++
++    // Move the accumulator of each row to the scale of this block of x. A
++    // fragment has 4 values for each of 2 rows.
++    constexpr int shift_every = x_span > 0 ? x_span : 1;
++    const bool shift = x_span > 0 && (k / BK) % shift_every == 0;
++    STEEL_PRAGMA_UNROLL
++    for (short i = 0; shift && i < TM; i++) {
++      typedef metal::vec<int32_t, BaseNAXFrag::kElemsPerFrag> frag_t;
++      const device uint8_t* e0 =
++          x_exp + size_t(i * BaseNAXFrag::kFragRows) * x_exp_stride + k / BK;
++      const device uint8_t* e1 = e0 + size_t(exp_ld) * x_exp_stride;
++      const int s0 = int(e0[1]) - int(e0[0]);
++      const int s1 = int(e1[1]) - int(e1[0]);
++      const int l0 = max(s0, 0);
++      const int l1 = max(s1, 0);
++      const int r0 = max(-s0, 0);
++      const int r1 = max(-s1, 0);
++      const frag_t left = frag_t(l0, l0, l0, l0, l1, l1, l1, l1);
++      const frag_t right = frag_t(r0, r0, r0, r0, r1, r1, r1, r1);
++      const frag_t rounding = (frag_t(1) << right) >> 1;
++      STEEL_PRAGMA_UNROLL
++      for (short j = 0; j < TN; j++) {
++        Dtile.frag_at(i, j) =
++            ((Dtile.frag_at(i, j) << left) + rounding) >> right;
++      }
++    }
++
++    STEEL_PRAGMA_NO_UNROLL
++    for (int kk1 = 0; kk1 < BK; kk1 += SK) {
++      NAXTile<int8_t, TM, TK> Atile;
++      NAXTile<int8_t, TN, TK> Btile;
++
++      volatile int compiler_barrier;
++
++      Atile.load(x8 + kk1, BK);
++      Btile.template load<int8_t, BK_padded, 1>(Ws + tn * BK_padded + kk1);
++
++      tile_matmad_nax(
++          Dtile,
++          Atile,
++          metal::bool_constant<false>{},
++          Btile,
++          metal::bool_constant<true>{});
++
++      (void)compiler_barrier;
++    }
++
++    x8 += BM * BK;
++  }
++
++  // Guarded stores are slow, only use them at the edges of the output
++  const bool interior = (y_row + tm + SM <= M) && (y_col + tn + SN <= N);
++  dispatch_bool(interior, [&](auto kInterior) {
++    STEEL_PRAGMA_UNROLL
++    for (short i = 0; i < TM; i++) {
++      STEEL_PRAGMA_UNROLL
++      for (short j = 0; j < TN; j++) {
++        const auto frag = Dtile.frag_at(i, j);
++        STEEL_PRAGMA_UNROLL
++        for (short e = 0; e < BaseNAXFrag::kElemsPerFrag; e++) {
++          const short2 pos = BaseNAXFrag::get_coord(e);
++          const int r = y_row + tm + i * BaseNAXFrag::kFragRows + pos.y;
++          const int c = y_col + tn + j * BaseNAXFrag::kFragCols + pos.x;
++          if constexpr (kInterior.value) {
++            y[size_t(r) * N + c] =
++                static_cast<T>(float(frag[e]) * x_scale[r] * w_scale[c]);
++          } else if (r < M && c < N) {
++            y[size_t(r) * N + c] =
++                static_cast<T>(float(frag[e]) * x_scale[r] * w_scale[c]);
++          }
++        }
++      }
++    }
++  });
++}
+diff --git a/mlx/backend/metal/kernels/quantized_nax.metal b/mlx/backend/metal/kernels/quantized_nax.metal
+index 4d61232e..6478298e 100644
+--- a/mlx/backend/metal/kernels/quantized_nax.metal
++++ b/mlx/backend/metal/kernels/quantized_nax.metal
+@@ -110,4 +110,51 @@
+   instantiate_quantized_groups(6) \
+   instantiate_quantized_groups(8)
+ 
+-instantiate_quantized_all() // clang-format on
++instantiate_quantized_all()
++
++// Staged int8 qmm
++#define instantiate_qmm_i8_span(type, group_size, bits, span)       \
++  instantiate_kernel(                                               \
++      "affine_qmm_t_nax_i8_" #type "_gs_" #group_size "_b_" #bits   \
++      "_xs_" #span,                                                 \
++      affine_qmm_t_nax_i8,                                          \
++      type,                                                         \
++      group_size,                                                   \
++      bits,                                                         \
++      span)
++
++#define instantiate_qmm_i8(type, group_size, bits)     \
++  instantiate_qmm_i8_span(type, group_size, bits, 0)   \
++  instantiate_qmm_i8_span(type, group_size, bits, 1)   \
++  instantiate_qmm_i8_span(type, group_size, bits, 4)
++
++#define instantiate_qmm_i8_groups(type, bits)        \
++  instantiate_kernel(                                \
++      "affine_qmm_i8_row_scales_" #type "_b_" #bits, \
++      affine_qmm_i8_row_scales,                      \
++      type,                                          \
++      bits)                                          \
++  instantiate_qmm_i8(type, 128, bits)                \
++  instantiate_qmm_i8(type, 64, bits)                 \
++  instantiate_qmm_i8(type, 32, bits)
++
++#define instantiate_qmm_i8_types(bits)       \
++  instantiate_qmm_i8_groups(float, bits)     \
++  instantiate_qmm_i8_groups(float16_t, bits) \
++  instantiate_qmm_i8_groups(bfloat16_t, bits)
++
++#define instantiate_qmm_i8_quantize(type) \
++  instantiate_kernel(                     \
++      "affine_qmm_i8_quantize_x_" #type,  \
++      affine_qmm_i8_quantize_x,           \
++      type)
++
++instantiate_qmm_i8_types(2)
++instantiate_qmm_i8_types(3)
++instantiate_qmm_i8_types(4)
++instantiate_qmm_i8_types(5)
++instantiate_qmm_i8_types(6)
++instantiate_qmm_i8_types(8)
++instantiate_qmm_i8_quantize(float)
++instantiate_qmm_i8_quantize(float16_t)
++instantiate_qmm_i8_quantize(bfloat16_t) // clang-format on
+diff --git a/mlx/backend/metal/quantized.cpp b/mlx/backend/metal/quantized.cpp
+index 052dd761..2d3e73e7 100644
+--- a/mlx/backend/metal/quantized.cpp
++++ b/mlx/backend/metal/quantized.cpp
+@@ -942,6 +942,239 @@ void qmm_nax(
+   compute_encoder.dispatch_threadgroups(grid_dims, group_dims);
+ }
+ 
++// x @ w.T with int8 weights and int8 activations
++void qmm_nax_i8(
++    const array& x,
++    const array& w,
++    const array& scales,
++    const array& biases,
++    array& out,
++    int group_size,
++    int bits,
++    int M,
++    int N,
++    int K,
++    int x_span,
++    metal::Device& d,
++    const Stream& s) {
++  // Same tiling as qmm_nax
++  int wm = 2;
++  int wn = 2;
++  int bm = 64;
++  int bn = 64;
++  int bk = 64;
++  int M_pad = ((M + bm - 1) / bm) * bm;
++  int n_blocks = K / bk;
++
++  // x_span is 0 for one scale per row of x, or the number of blocks that
++  // share an exponent. The blocks of a row must divide into such groups.
++  if (x_span > 1 && n_blocks % x_span != 0) {
++    x_span = 1;
++  }
++
++  // The scale of x can be halved max_exp times for a block. With all the
++  // other blocks of the row at the row scale the int32 sum does not overflow.
++  int max_exp = 0;
++  if (x_span > 0) {
++    // INT32_MAX / (64 * 127 * 127)
++    constexpr int budget = 2080;
++    while (max_exp < 7 && (n_blocks - 1) * (2 << max_exp) + 1 <= budget) {
++      max_exp++;
++    }
++  }
++
++  auto& compute_encoder = metal::get_command_encoder(s);
++  auto make_temporary = [&compute_encoder](Shape shape, Dtype dtype) {
++    array t(std::move(shape), dtype, nullptr, {});
++    t.set_data(allocator::malloc(t.nbytes()));
++    compute_encoder.add_temporary(t);
++    return t;
++  };
++  array x8 = make_temporary({M_pad, K}, int8);
++  array x_scale = make_temporary({M}, float32);
++  array x_exp = make_temporary({M_pad, n_blocks + 1}, uint8);
++  array w_scale = make_temporary({N}, float32);
++  array w_inv = make_temporary({N}, float32);
++
++  std::string type_string = get_type_string(x.dtype());
++  auto get_kernel = [&d](const std::string& kname, std::string template_def) {
++    return get_qmm_nax_kernel(d, kname, template_def, "affine");
++  };
++
++  {
++    std::string kname;
++    concatenate(kname, "affine_qmm_i8_row_scales_", type_string, "_b_", bits);
++    auto kernel = get_kernel(
++        kname,
++        get_template_definition(
++            kname, "affine_qmm_i8_row_scales", type_string, bits));
++    compute_encoder.set_compute_pipeline_state(kernel);
++    compute_encoder.set_input_array(scales, 0);
++    compute_encoder.set_input_array(biases, 1);
++    compute_encoder.set_output_array(w_scale, 2);
++    compute_encoder.set_output_array(w_inv, 3);
++    int K_g = K / group_size;
++    compute_encoder.set_bytes(K_g, 4);
++    MTL::Size grid_dims(N, 1, 1);
++    MTL::Size group_dims(
++        std::min<size_t>(N, kernel->maxTotalThreadsPerThreadgroup()), 1, 1);
++    compute_encoder.dispatch_threads(grid_dims, group_dims);
++  }
++
++  {
++    std::string kname;
++    concatenate(kname, "affine_qmm_i8_quantize_x_", type_string);
++    auto kernel = get_kernel(
++        kname,
++        get_template_definition(
++            kname, "affine_qmm_i8_quantize_x", type_string));
++    compute_encoder.set_compute_pipeline_state(kernel);
++    compute_encoder.set_input_array(x, 0);
++    compute_encoder.set_output_array(x8, 1);
++    compute_encoder.set_output_array(x_scale, 2);
++    compute_encoder.set_output_array(x_exp, 3);
++    compute_encoder.set_bytes(K, 4);
++    compute_encoder.set_bytes(M, 5);
++    compute_encoder.set_bytes(max_exp, 6);
++    compute_encoder.set_bytes(x_span, 7);
++    MTL::Size group_dims(n_blocks, 1, 1);
++    MTL::Size grid_dims(1, M_pad, 1);
++    compute_encoder.dispatch_threadgroups(grid_dims, group_dims);
++  }
++
++  {
++    std::string kname;
++    kname.reserve(64);
++    concatenate(
++        kname,
++        "affine_qmm_t_nax_i8_",
++        type_string,
++        "_gs_",
++        group_size,
++        "_b_",
++        bits,
++        "_xs_",
++        x_span);
++    auto kernel = get_kernel(
++        kname,
++        get_template_definition(
++            kname,
++            "affine_qmm_t_nax_i8",
++            type_string,
++            group_size,
++            bits,
++            x_span));
++    compute_encoder.set_compute_pipeline_state(kernel);
++    compute_encoder.set_input_array(w, 0);
++    compute_encoder.set_input_array(scales, 1);
++    compute_encoder.set_input_array(biases, 2);
++    compute_encoder.set_input_array(w_inv, 3);
++    compute_encoder.set_input_array(w_scale, 4);
++    compute_encoder.set_input_array(x8, 5);
++    compute_encoder.set_input_array(x_scale, 6);
++    compute_encoder.set_output_array(out, 7);
++    compute_encoder.set_input_array(x_exp, 8);
++    compute_encoder.set_bytes(K, 9);
++    compute_encoder.set_bytes(N, 10);
++    compute_encoder.set_bytes(M, 11);
++    MTL::Size group_dims(32, wn, wm);
++    MTL::Size grid_dims((N + bn - 1) / bn, M_pad / bm, 1);
++    compute_encoder.dispatch_threadgroups(grid_dims, group_dims);
++  }
++}
++
++// x @ w.T with fp8 weights and fp8 activations
++void qmm_nax_fp8(
++    const array& x,
++    const array& w,
++    const array& scales,
++    array& out,
++    int bits,
++    int M,
++    int N,
++    int K,
++    metal::Device& d,
++    const Stream& s,
++    const std::string& mode) {
++  // Same tiling as qmm_nax
++  int wm = 2;
++  int wn = 2;
++  int bm = 64;
++  int bn = 64;
++  int bk = 64;
++  int M_pad = ((M + bm - 1) / bm) * bm;
++
++  // Whole tiles of rows run the kernel without a test on its stores, a last
++  // partial tile of rows or a partial tile in N takes the guarded kernel
++  int M_whole = (N % bn == 0) ? (M / bm) * bm : 0;
++
++  auto& compute_encoder = metal::get_command_encoder(s);
++  auto make_temporary = [&compute_encoder](Shape shape, Dtype dtype) {
++    array t(std::move(shape), dtype, nullptr, {});
++    t.set_data(allocator::malloc(t.nbytes()));
++    compute_encoder.add_temporary(t);
++    return t;
++  };
++  array x8 = make_temporary({M_pad, K}, uint8);
++  array x_scale = make_temporary({M}, float32);
++
++  std::string type_string = get_type_string(x.dtype());
++  auto get_kernel = [&d, &mode](
++                        const std::string& kname, std::string template_def) {
++    return get_qmm_nax_kernel(d, kname, template_def, mode);
++  };
++
++  {
++    std::string kname;
++    concatenate(kname, "fp_qmm_fp8_quantize_x_", type_string);
++    auto kernel = get_kernel(
++        kname,
++        get_template_definition(kname, "fp_qmm_fp8_quantize_x", type_string));
++    compute_encoder.set_compute_pipeline_state(kernel);
++    compute_encoder.set_input_array(x, 0);
++    compute_encoder.set_output_array(x8, 1);
++    compute_encoder.set_output_array(x_scale, 2);
++    compute_encoder.set_bytes(K, 3);
++    compute_encoder.set_bytes(M, 4);
++    MTL::Size group_dims(K / bk, 1, 1);
++    MTL::Size grid_dims(1, M_pad, 1);
++    compute_encoder.dispatch_threadgroups(grid_dims, group_dims);
++  }
++
++  auto matmul = [&](bool aligned, int row, int rows) {
++    std::string kname;
++    concatenate(
++        kname,
++        mode,
++        "_qmm_t_nax_fp8_",
++        type_string,
++        aligned ? "_al_true" : "_al_false");
++    auto kernel = get_kernel(
++        kname,
++        get_template_definition(
++            kname, "fp_qmm_t_nax_fp8", type_string, bits, aligned));
++    compute_encoder.set_compute_pipeline_state(kernel);
++    compute_encoder.set_input_array(w, 0);
++    compute_encoder.set_input_array(scales, 1);
++    compute_encoder.set_input_array(x8, 2, int64_t(row) * K);
++    compute_encoder.set_input_array(
++        x_scale, 3, int64_t(row) * x_scale.itemsize());
++    compute_encoder.set_output_array(out, 4, int64_t(row) * N * out.itemsize());
++    compute_encoder.set_bytes(K, 5);
++    compute_encoder.set_bytes(N, 6);
++    compute_encoder.set_bytes(rows, 7);
++    MTL::Size group_dims(32, wn, wm);
++    MTL::Size grid_dims((N + bn - 1) / bn, (rows + bm - 1) / bm, 1);
++    compute_encoder.dispatch_threadgroups(grid_dims, group_dims);
++  };
++  if (M_whole > 0) {
++    matmul(true, 0, M_whole);
++  }
++  if (M_whole < M) {
++    matmul(false, M_whole, M - M_whole);
++  }
++}
++
+ void gather_qmm_nax(
+     const array& x,
+     const array& w,
+@@ -1903,8 +2136,39 @@ void QuantizedMatmul::eval_gpu(const std::vector<array>& inputs, array& out) {
+   int M = non_batched ? x.size() / K : x.shape(-2);
+   int N = out.shape(-1);
+ 
++  // The int8 qmm needs K / 64 threads per row and tiles of 64 rows
++  if (compute_8bit_ && transpose_ && mode_ == QuantizationMode::Affine &&
++      biases && non_batched && metal::is_nax_available() && K % 64 == 0 &&
++      K / 64 <= 1024 && M >= 64) {
++    qmm_nax_i8(
++        x,
++        w,
++        scales,
++        *biases,
++        out,
++        group_size_,
++        bits_,
++        M,
++        N,
++        K,
++        compute_8bit_ == 2 ? 0 : (compute_8bit_ == 4 ? 4 : 1),
++        d,
++        s);
++    return;
++  }
++
+   int vector_limit = transpose_ ? get_qmv_batch_limit(K, N, d) : 4;
+   auto mode = quantization_mode_to_string(mode_);
++
++  // The fp8 qmm needs the same, and weights in groups of 32
++  if (compute_8bit_ && transpose_ &&
++      (mode_ == QuantizationMode::Mxfp4 || mode_ == QuantizationMode::Mxfp8) &&
++      group_size_ == 32 && non_batched && metal::is_nax_fp8_available() &&
++      K % 64 == 0 && K / 64 <= 1024 && M >= 64) {
++    qmm_nax_fp8(x, w, scales, out, bits_, M, N, K, d, s, mode);
++    return;
++  }
++
+   // It is a matrix matrix product.
+   if (M >= vector_limit) {
+     // Use split-K qmm for small M with transposed weights (non-batched only)
+diff --git a/mlx/ops.cpp b/mlx/ops.cpp
+index 01ad2778..e466ee84 100644
+--- a/mlx/ops.cpp
++++ b/mlx/ops.cpp
+@@ -4978,11 +4978,19 @@ array quantized_matmul(
+   }
+   auto out_shape = inputs[0].shape();
+   out_shape.back() = w_outer_dims;
++  int compute_8bit = 0;
++  if (transpose && qmode == QuantizationMode::Affine) {
++    compute_8bit = env::qmm_int8();
++  } else if (
++      transpose &&
++      (qmode == QuantizationMode::Mxfp4 || qmode == QuantizationMode::Mxfp8)) {
++    compute_8bit = env::qmm_fp8() ? 8 : 0;
++  }
+   return array(
+       std::move(out_shape),
+       dtype,
+       std::make_shared<QuantizedMatmul>(
+-          to_stream(s), group_size, bits, qmode, transpose),
++          to_stream(s), group_size, bits, qmode, transpose, compute_8bit),
+       std::move(inputs));
+ }
+ 
+diff --git a/mlx/primitives.cpp b/mlx/primitives.cpp
+index d4035247..991069bc 100644
+--- a/mlx/primitives.cpp
++++ b/mlx/primitives.cpp
+@@ -3685,7 +3685,8 @@ std::vector<array> QuantizedMatmul::jvp(
+ bool QuantizedMatmul::is_equivalent(const Primitive& other) const {
+   const QuantizedMatmul& qm_other = static_cast<const QuantizedMatmul&>(other);
+   return group_size_ == qm_other.group_size_ && bits_ == qm_other.bits_ &&
+-      mode_ == qm_other.mode_ && transpose_ == qm_other.transpose_;
++      mode_ == qm_other.mode_ && transpose_ == qm_other.transpose_ &&
++      compute_8bit_ == qm_other.compute_8bit_;
+ }
+ 
+ std::vector<Shape> QuantizedMatmul::output_shapes(
+diff --git a/mlx/primitives.h b/mlx/primitives.h
+index 3ec8be22..cee50af2 100644
+--- a/mlx/primitives.h
++++ b/mlx/primitives.h
+@@ -1642,12 +1642,14 @@ class QuantizedMatmul : public UnaryPrimitive {
+       int group_size,
+       int bits,
+       QuantizationMode mode,
+-      bool transpose)
++      bool transpose,
++      int compute_8bit = 0)
+       : UnaryPrimitive(stream),
+         group_size_(group_size),
+         bits_(bits),
+         mode_(mode),
+-        transpose_(transpose) {}
++        transpose_(transpose),
++        compute_8bit_(compute_8bit) {}
+ 
+   void eval_cpu(const std::vector<array>& inputs, array& out) override;
+   void eval_gpu(const std::vector<array>& inputs, array& out) override;
+@@ -1658,7 +1660,8 @@ class QuantizedMatmul : public UnaryPrimitive {
+   bool is_equivalent(const Primitive& other) const override;
+   std::vector<Shape> output_shapes(const std::vector<array>& inputs) override;
+   auto state() const {
+-    return std::make_tuple(group_size_, bits_, mode_, transpose_);
++    return std::make_tuple(
++        group_size_, bits_, mode_, transpose_, compute_8bit_);
+   }
+ 
+  private:
+@@ -1666,6 +1669,9 @@ class QuantizedMatmul : public UnaryPrimitive {
+   int bits_;
+   QuantizationMode mode_;
+   bool transpose_;
++  // Staged 8-bit compute: int8 with a scale of x per block (1), per row (2)
++  // or per 4 blocks (4); fp8 for mxfp4 and mxfp8 weights (8)
++  int compute_8bit_;
+ };
+ 
+ class QQMatmul : public UnaryPrimitive {
+diff --git a/mlx/utils.h b/mlx/utils.h
+index 4b7e6d12..51143f99 100644
+--- a/mlx/utils.h
++++ b/mlx/utils.h
+@@ -227,6 +227,15 @@ inline bool enable_tf32() {
+   return enable_tf32_;
+ }
+ 
++// Not cached, each quantized matmul reads it when it is built
++inline int qmm_int8() {
++  return get_var("MLX_QMM_INT8", 0);
++}
++
++inline bool qmm_fp8() {
++  return get_var("MLX_QMM_FP8", 0);
++}
++
+ inline int nccl_timeout(int default_value) {
+   static int nccl_timeout = get_var("MLX_NCCL_TIMEOUT", default_value);
+   return nccl_timeout;
+diff --git a/python/tests/test_quantized.py b/python/tests/test_quantized.py
+index 3c1bf0bb..142110fe 100644
+--- a/python/tests/test_quantized.py
++++ b/python/tests/test_quantized.py
+@@ -536,6 +536,68 @@ class TestQuantized(mlx_tests.MLXTestCase):
+                 self.assertLess((y_q - y_hat).abs().max(), tol)
+ 
+     @unittest.skipIf("CI" in os.environ, "too slow in CI")
++    def test_qmm_int8(self):
++        # With MLX_QMM_INT8 set, eligible affine qmms run on int8 where the
++        # matrix kernels support it. The result stays close to the float one.
++        key = mx.random.key(0)
++        k1, k2 = mx.random.split(key)
++        dtype = mx.float16 if (mx.default_device() == mx.gpu) else mx.float32
++        tests = product(
++            [128, 64, 32],  # group_size
++            [2, 3, 4, 5, 6, 8],  # bits
++            [(64, 128, 256), (100, 96, 512), (257, 200, 1024)],  # M, N, K
++        )
++        for group_size, bits, (M, N, K) in tests:
++            with self.subTest(shape=(M, N, K), group_size=group_size, bits=bits):
++                x = (mx.random.normal(shape=(M, K), key=k1) / K**0.5).astype(dtype)
++                w = (mx.random.normal(shape=(N, K), key=k2) / K**0.5).astype(dtype)
++                w_q, scales, biases = mx.quantize(w, group_size, bits)
++
++                ys = []
++                # 1 and 4: a scale per block or per 4 blocks of x, 2: per row
++                for flag in ("0", "1", "2", "4"):
++                    # The switch is read when the op is built
++                    with mlx_tests.scoped_env(MLX_QMM_INT8=flag):
++                        y = mx.quantized_matmul(
++                            x, w_q, scales, biases, True, group_size, bits
++                        )
++                    mx.eval(y)
++                    ys.append(y.astype(mx.float32))
++                for y in ys[1:]:
++                    self.assertEqual(ys[0].shape, y.shape)
++                    err = mx.linalg.norm(y - ys[0]) / mx.linalg.norm(ys[0])
++                    self.assertLess(err.item(), 5e-2)
++
++    def test_qmm_fp8(self):
++        # With MLX_QMM_FP8 set, eligible mxfp4 and mxfp8 qmms run on fp8 where
++        # that is the fastest matmul. The result stays close to the float one.
++        key = mx.random.key(0)
++        k1, k2 = mx.random.split(key)
++        dtype = mx.float16 if (mx.default_device() == mx.gpu) else mx.float32
++        tests = product(
++            ["mxfp4", "mxfp8"],  # mode
++            [(64, 128, 256), (100, 128, 512), (257, 200, 1024)],  # M, N, K
++        )
++        for mode, (M, N, K) in tests:
++            with self.subTest(shape=(M, N, K), mode=mode):
++                bits = 4 if mode == "mxfp4" else 8
++                x = (mx.random.normal(shape=(M, K), key=k1) / K**0.5).astype(dtype)
++                w = (mx.random.normal(shape=(N, K), key=k2) / K**0.5).astype(dtype)
++                w_q, scales = mx.quantize(w, mode=mode)
++
++                ys = []
++                for flag in ("0", "1"):
++                    # The switch is read when the op is built
++                    with mlx_tests.scoped_env(MLX_QMM_FP8=flag):
++                        y = mx.quantized_matmul(
++                            x, w_q, scales, None, True, 32, bits, mode
++                        )
++                    mx.eval(y)
++                    ys.append(y.astype(mx.float32))
++                self.assertEqual(ys[0].shape, ys[1].shape)
++                err = mx.linalg.norm(ys[1] - ys[0]) / mx.linalg.norm(ys[0])
++                self.assertLess(err.item(), 5e-2)
++
+     def test_qmm_non_transposed(self):
+         # The non-transposed matmul (w is [K, N]) is reachable mainly from the
+         # vjp of a quantized linear layer, so it gets much less coverage than

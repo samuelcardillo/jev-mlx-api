@@ -1,0 +1,6 @@
+cmake==3.31.10
+setuptools==84.0.0
+wheel==0.48.0
+nanobind==3.1.0
+packaging==26.3
+typing-extensions==4.16.0

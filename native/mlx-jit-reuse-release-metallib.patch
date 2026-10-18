@@ -1,0 +1,208 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3f233048..ae582bba 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -42,6 +42,23 @@ option(MLX_BUILD_GGUF "Include support for GGUF format" ON)
+ option(MLX_BUILD_SAFETENSORS "Include support for safetensors format" ON)
+ option(MLX_BUILD_PYTHON_STUBS "Build stub files for python bindings" ON)
+ option(MLX_METAL_JIT "Use JIT compilation for Metal kernels" OFF)
++set(MLX_PREBUILT_METALLIB "" CACHE FILEPATH
++    "Reuse matching-release base kernels with MLX_METAL_JIT (local benchmark)")
++set(MLX_PREBUILT_METAL_VERSION "" CACHE STRING
++    "Metal language version for JIT when reusing a prebuilt library (e.g. 400)")
++if(MLX_PREBUILT_METALLIB)
++  if(NOT MLX_METAL_JIT)
++    message(FATAL_ERROR "MLX_PREBUILT_METALLIB requires MLX_METAL_JIT=ON")
++  endif()
++  if(NOT IS_ABSOLUTE "${MLX_PREBUILT_METALLIB}" OR
++     NOT EXISTS "${MLX_PREBUILT_METALLIB}")
++    message(FATAL_ERROR "MLX_PREBUILT_METALLIB must name an existing absolute path")
++  endif()
++  if(NOT MLX_PREBUILT_METAL_VERSION MATCHES "^[0-9][0-9][0-9]$")
++    message(FATAL_ERROR "Set MLX_PREBUILT_METAL_VERSION explicitly, e.g. 400")
++  endif()
++  message(STATUS "Reusing base kernels: ${MLX_PREBUILT_METALLIB}; source and library must be from the same release")
++endif()
+ option(MLX_USE_CCACHE "Use CCache for compilation cache when available" ON)
+ option(MLX_EXPORT_ALL_SYMBOLS "Export all symbols in the library" OFF)
+ option(BUILD_SHARED_LIBS "Build mlx as a shared library" OFF)
+@@ -213,14 +230,20 @@ if(MLX_BUILD_METAL)
+     endif()
+     message(STATUS "Building for macOS ${CMAKE_OSX_DEPLOYMENT_TARGET}")
+ 
+-    # Get Metal version.
+-    set(XCRUN_FLAGS "-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}")
+-    execute_process(
+-      COMMAND
+-        zsh "-c"
+-        "echo \"__METAL_VERSION__\" | xcrun -sdk macosx metal ${XCRUN_FLAGS} -E -x metal -P - | tail -1"
+-      OUTPUT_VARIABLE MLX_METAL_VERSION
+-      OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
++    # The JIT experiment can reuse this release's unchanged base kernels.
++    # Its language level is explicit; no offline Metal compiler is invoked.
++    if(MLX_PREBUILT_METALLIB)
++      set(MLX_METAL_VERSION "${MLX_PREBUILT_METAL_VERSION}")
++    else()
++      # Get Metal version.
++      set(XCRUN_FLAGS "-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}")
++      execute_process(
++        COMMAND
++          zsh "-c"
++          "echo \"__METAL_VERSION__\" | xcrun -sdk macosx metal ${XCRUN_FLAGS} -E -x metal -P - | tail -1"
++        OUTPUT_VARIABLE MLX_METAL_VERSION
++        OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
++    endif()
+     message(STATUS "Metal version: ${MLX_METAL_VERSION}")
+   else()
+     set(MLX_METAL_VERSION 0)
+diff --git a/mlx/backend/metal/CMakeLists.txt b/mlx/backend/metal/CMakeLists.txt
+index cccaad8a..cbb5a9fd 100644
+--- a/mlx/backend/metal/CMakeLists.txt
++++ b/mlx/backend/metal/CMakeLists.txt
+@@ -9,13 +9,26 @@ function(make_jit_source SRC_FILE)
+   # Additional arguments to this function are treated as dependencies in the
+   # Cmake build system.
+   get_filename_component(SRC_NAME ${SRC_FILE} NAME)
+-  add_custom_command(
+-    OUTPUT jit/${SRC_NAME}.cpp
+-    COMMAND
+-      bash ${CMAKE_CURRENT_SOURCE_DIR}/make_compiled_preamble.sh
+-      ${CMAKE_CURRENT_BINARY_DIR}/jit ${CMAKE_C_COMPILER} ${PROJECT_SOURCE_DIR}
+-      ${SRC_FILE}
+-    DEPENDS make_compiled_preamble.sh kernels/${SRC_FILE}.h ${ARGN})
++  if(MLX_PREBUILT_METALLIB)
++    if(NOT Python_EXECUTABLE)
++      message(FATAL_ERROR "Offline JIT source embedding requires Python_EXECUTABLE")
++    endif()
++    add_custom_command(
++      OUTPUT jit/${SRC_NAME}.cpp
++      COMMAND ${Python_EXECUTABLE}
++        ${CMAKE_CURRENT_SOURCE_DIR}/make_compiled_preamble_offline.py
++        ${CMAKE_CURRENT_BINARY_DIR}/jit ${PROJECT_SOURCE_DIR} ${SRC_FILE}
++      DEPENDS make_compiled_preamble_offline.py kernels/${SRC_FILE}.h ${ARGN}
++      VERBATIM)
++  else()
++    add_custom_command(
++      OUTPUT jit/${SRC_NAME}.cpp
++      COMMAND
++        bash ${CMAKE_CURRENT_SOURCE_DIR}/make_compiled_preamble.sh
++        ${CMAKE_CURRENT_BINARY_DIR}/jit ${CMAKE_C_COMPILER} ${PROJECT_SOURCE_DIR}
++        ${SRC_FILE}
++      DEPENDS make_compiled_preamble.sh kernels/${SRC_FILE}.h ${ARGN})
++  endif()
+   add_custom_target(${SRC_NAME} DEPENDS jit/${SRC_NAME}.cpp)
+   add_dependencies(mlx ${SRC_NAME})
+   target_sources(mlx PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/jit/${SRC_NAME}.cpp)
+diff --git a/mlx/backend/metal/kernels/CMakeLists.txt b/mlx/backend/metal/kernels/CMakeLists.txt
+index 07624e18..5f656e6c 100644
+--- a/mlx/backend/metal/kernels/CMakeLists.txt
++++ b/mlx/backend/metal/kernels/CMakeLists.txt
+@@ -1,3 +1,23 @@
++# Local benchmark support: with JIT enabled, base kernel definitions remain
++# identical to the release wheel while modified matrix kernels compile at run time.
++if(MLX_PREBUILT_METALLIB)
++  add_custom_command(
++    OUTPUT ${MLX_METAL_PATH}/mlx.metallib
++    COMMAND ${CMAKE_COMMAND} -E make_directory ${MLX_METAL_PATH}
++    COMMAND ${CMAKE_COMMAND} -E copy_if_different
++            ${MLX_PREBUILT_METALLIB} ${MLX_METAL_PATH}/mlx.metallib
++    DEPENDS ${MLX_PREBUILT_METALLIB}
++    COMMENT "Reusing matching-release base Metal kernels"
++    VERBATIM)
++  add_custom_target(mlx-metallib DEPENDS ${MLX_METAL_PATH}/mlx.metallib)
++  add_dependencies(mlx mlx-metallib)
++  include(GNUInstallDirs)
++  install(FILES ${MLX_METAL_PATH}/mlx.metallib
++          DESTINATION ${CMAKE_INSTALL_LIBDIR}
++          COMPONENT metallib)
++  return()
++endif()
++
+ set(BASE_HEADERS
+     bf16.h
+     bf16_math.h
+diff --git a/mlx/backend/metal/make_compiled_preamble_offline.py b/mlx/backend/metal/make_compiled_preamble_offline.py
+new file mode 100644
+index 00000000..886ea855
+--- /dev/null
++++ b/mlx/backend/metal/make_compiled_preamble_offline.py
+@@ -0,0 +1,79 @@
++#!/usr/bin/env python3
++"""Embed local Metal headers without an offline Metal compiler.
++
++Used only by the matching-release-metallib JIT experiment. Local literal quoted
++includes are expanded in place. Metal/system includes, macros and conditionals
++are left for the actual runtime Metal compiler. Explicit guards implement each
++header's pragma-once semantics across concatenated source fragments.
++"""
++from __future__ import annotations
++
++import hashlib
++import re
++import sys
++from pathlib import Path
++
++QUOTED_INCLUDE = re.compile(r'^\s*#\s*include\s+"([^"\n]+)"\s*(?://.*)?$')
++PRAGMA_ONCE = re.compile(r'^\s*#\s*pragma\s+once\s*(?://.*)?$')
++
++
++def expand_header(path: Path, root: Path, ancestors: tuple[Path, ...] = ()) -> str:
++    path = path.resolve(strict=True)
++    relative = path.relative_to(root).as_posix()
++    lines = path.read_text().splitlines(keepends=True)
++    once = any(PRAGMA_ONCE.match(line) for line in lines)
++    if path in ancestors:
++        # No such cycles occur in this source tree; fail rather than invent
++        # preprocessor behavior for an unexpected future header graph.
++        raise ValueError(f'Include cycle involving {relative}')
++    guard = 'MLX_OFFLINE_JIT_ONCE_' + hashlib.sha256(relative.encode()).hexdigest()[:24].upper()
++    out = []
++    if once:
++        out += [f'#ifndef {guard}\n', f'#define {guard}\n']
++    out.append(f'#line 1 "{relative}"\n')
++    for number, line in enumerate(lines, 1):
++        if PRAGMA_ONCE.match(line):
++            out.append('\n')
++            continue
++        include = QUOTED_INCLUDE.match(line)
++        if include:
++            name = include.group(1)
++            candidates = [path.parent / name, root / name]
++            dependency = next((p for p in candidates if p.is_file()), None)
++            if dependency is None:
++                raise FileNotFoundError(f'{relative}:{number}: cannot resolve {name}')
++            out.append(expand_header(dependency, root, ancestors + (path,)))
++            out.append(f'\n#line {number + 1} "{relative}"\n')
++        else:
++            if re.match(r'^\s*#\s*include\s+[^<"]', line):
++                raise ValueError(f'{relative}:{number}: unsupported non-literal include')
++            out.append(line)
++    if not out[-1].endswith('\n'):
++        out.append('\n')
++    if once:
++        out.append(f'#endif // {guard}\n')
++    return ''.join(out)
++
++
++def main() -> None:
++    output_dir, source_root, source_name = sys.argv[1:]
++    root = Path(source_root).resolve(strict=True)
++    source = root / 'mlx/backend/metal/kernels' / (source_name + '.h')
++    expanded = expand_header(source, root)
++    delimiter = 'mlx_offline_jit'
++    if f'){delimiter}"' in expanded:
++        raise ValueError('Raw-string delimiter appears in source')
++    function = Path(source_name).name
++    output = Path(output_dir) / (function + '.cpp')
++    output.parent.mkdir(parents=True, exist_ok=True)
++    output.write_text(
++        '// Generated by make_compiled_preamble_offline.py; source is unchanged.\n'
++        'namespace mlx::core::metal {\n'
++        f'const char* {function}() {{\n'
++        f'  return R"{delimiter}(\n{expanded}){delimiter}";\n'
++        '}\n} // namespace mlx::core::metal\n'
++    )
++
++
++if __name__ == '__main__':
++    main()
