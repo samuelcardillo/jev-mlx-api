@@ -1,0 +1,90 @@
+{
+  "base_git_sha": "36969c094354086e15d2a327a9c50feb20b9cf11",
+  "base_version": "0.32.4",
+  "upstream_patch_shas": [
+    "bb8189463b4c63474b0b069eb487f160fdc4cbdf",
+    "d03fed7b6965864b61c7c10fc48277e38c1a272f"
+  ],
+  "source_path": "$JEV_HOME/native-build/mlx",
+  "aot_kernel_source_files_verified_unchanged": [
+    "mlx/backend/metal/kernels/arg_reduce.metal",
+    "mlx/backend/metal/kernels/conv.metal",
+    "mlx/backend/metal/kernels/dot.metal",
+    "mlx/backend/metal/kernels/gather_mm_offsets.metal",
+    "mlx/backend/metal/kernels/layer_norm.metal",
+    "mlx/backend/metal/kernels/random.metal",
+    "mlx/backend/metal/kernels/rms_norm.metal",
+    "mlx/backend/metal/kernels/rope.metal",
+    "mlx/backend/metal/kernels/scaled_dot_product_attention.metal",
+    "mlx/backend/metal/kernels/scaled_dot_product_attention_vjp.metal",
+    "mlx/backend/metal/kernels/gated_delta_update.metal",
+    "mlx/backend/metal/kernels/gated_delta_update_vjp.metal",
+    "mlx/backend/metal/kernels/fence.metal",
+    "mlx/backend/metal/kernels/bf16.h",
+    "mlx/backend/metal/kernels/bf16_math.h",
+    "mlx/backend/metal/kernels/complex.h",
+    "mlx/backend/metal/kernels/defines.h",
+    "mlx/backend/metal/kernels/erf.h",
+    "mlx/backend/metal/kernels/expm1f.h",
+    "mlx/backend/metal/kernels/fp8.h",
+    "mlx/backend/metal/kernels/logging.h",
+    "mlx/backend/metal/kernels/utils.h",
+    "mlx/backend/metal/kernels/sdpa_blocked.h",
+    "mlx/backend/metal/kernels/sdpa_vector.h",
+    "mlx/backend/metal/kernels/gated_delta_update.h",
+    "mlx/backend/metal/kernels/gated_delta_update_vjp.h",
+    "mlx/backend/metal/kernels/steel/conv/params.h"
+  ],
+  "prebuilt_metallib_path": "$JEV_HOME/.venv/lib/python3.12/site-packages/mlx/lib/mlx.metallib",
+  "prebuilt_metallib_sha256": "c6d7a3facb83568f6e4cb2cf4a8c736ee29302571a48343cb9a3a4d1cd3e3893",
+  "build_flags": {
+    "MLX_METAL_JIT": "ON",
+    "MLX_PREBUILT_METALLIB": "$JEV_HOME/.venv/lib/python3.12/site-packages/mlx/lib/mlx.metallib",
+    "MLX_PREBUILT_METAL_VERSION": "400",
+    "CMAKE_OSX_DEPLOYMENT_TARGET": "26.2",
+    "CMAKE_OSX_SYSROOT": "$MACOS_SDK_26_5"
+  },
+  "gpu_tests_run": true,
+  "build_run": true,
+  "cmake_version": "3.31.10",
+  "offline_source_embedding": {
+    "method": "recursive expansion of literal quoted includes preserving conditionals; pragma once translated to deterministic include guards; system includes resolved by actual runtime Metal compiler",
+    "reason": "offline metal compiler unavailable",
+    "preprocessor_equivalence_checks": 53,
+    "validation_report": "offline-embedding-check.json",
+    "numerical_kernel_changes": false
+  },
+  "patch_sha256": {
+    "mlx-jit-reuse-release-metallib.patch": "245a4da5ce28fc67e4906b5c3aeb235246540402dfa229aba7ca4338c67d5b02",
+    "mlx-v0.32.4-staged-8bit-qmm.patch": "c79b0c5d53a5bfb474dec610cf08fa787510aabaffe0ba936a3ffb340a6735f6",
+    "mlx-jit-attention-dsplit-arity.patch": "00d112426933fcf8580053eb94cf6298be5471889ce1691c26af14c2cbeb1ae5"
+  },
+  "build_success": true,
+  "gpu_check": "results/native-kernel-check.json",
+  "wheel_name": "mlx-0.32.4.dev20261019+36969c09-cp312-cp312-macosx_26_0_arm64.whl",
+  "wheel_sha256": "9f58e9a42c7e04a38dba9227997e71e20abbc75864ebddfb3fb8d85d40a1bd8f",
+  "jit_attention_fix": {
+    "file": "mlx/backend/metal/jit_kernels.cpp",
+    "reason": "v0.32.4 JIT caller passed extra BV to attention_nax_dsplit; signature and AOT caller omit BV",
+    "change": "omit BV only for split_d template instantiation",
+    "kernel_body_changed": false,
+    "validation": "Rebuilt and full JEV 1K/4K probability probes passed in both native flag modes. See results/quality-native-stock.json and results/quality-staged_int8.json."
+  },
+  "attention_jit_fix_built": true,
+  "publication": {
+    "source_report_sha256": "9fde3986a7f03679813d1f0cd30b2499e1d940954a5ee4a78a3a5e1c14bd8b70",
+    "sanitization": "Local absolute paths replaced with symbolic runtime paths; process IDs and worker log paths removed. Timing, probability, correctness and memory measurements are unchanged.",
+    "pins": {
+      "model_repo": "nativ-community/JEV-27B-VL-MLX-8bit",
+      "model_revision": "a871d5f8787b3d8ce9d618e7260e959393030c7b",
+      "mlx_vlm_source": "https://github.com/Lazarus-931/mlx-vlm",
+      "mlx_vlm_revision": "597941d0d4eb900f1d066eba8d89abf474c0dd42",
+      "released_mlx_version": "0.32.4",
+      "native_mlx_base_revision": "36969c094354086e15d2a327a9c50feb20b9cf11",
+      "native_upstream_patch_revisions": [
+        "bb8189463b4c63474b0b069eb487f160fdc4cbdf",
+        "d03fed7b6965864b61c7c10fc48277e38c1a272f"
+      ]
+    }
+  }
+}

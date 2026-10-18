@@ -1,0 +1,677 @@
+{
+  "baseline_variant": "stock",
+  "candidate_variant": "staged_int8",
+  "note": "One observation per input, no latency claims and no semantic ground truth. Agreement checks numerical behavior across varied ambiguous prompts. Score returned values can change while the most probable score level remains the same.",
+  "max_abs_probability_delta": 0.006594419479370117,
+  "all_top_indices_match": true,
+  "all_returned_values_match": false,
+  "cases": [
+    {
+      "name": "short_bool_conditional",
+      "kind": "noul",
+      "input_tokens": 65,
+      "max_abs_probability_delta": 0.0014782752841711044,
+      "mean_abs_probability_delta": 0.0014782650396227837,
+      "total_variation_distance": 0.0014782650396227837,
+      "baseline_top_index": 0,
+      "candidate_top_index": 0,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.9420806989073753,
+      "baseline_value": false,
+      "candidate_value": false,
+      "returned_value_matches": true,
+      "baseline_probabilities": [
+        0.9710403680801392,
+        0.028959669172763824
+      ],
+      "candidate_probabilities": [
+        0.9725186228752136,
+        0.02748139388859272
+      ]
+    },
+    {
+      "name": "short_choice_two_needs",
+      "kind": "choice",
+      "input_tokens": 100,
+      "max_abs_probability_delta": 5.295456503517926e-06,
+      "mean_abs_probability_delta": 2.6343477657064795e-06,
+      "total_variation_distance": 5.268695531412959e-06,
+      "baseline_top_index": 1,
+      "candidate_top_index": 1,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.8467965498566628,
+      "baseline_value": "technical_support",
+      "candidate_value": "technical_support",
+      "returned_value_matches": true,
+      "baseline_probabilities": [
+        0.0764598473906517,
+        0.9232563972473145,
+        7.440723129548132e-05,
+        0.00020931621838826686
+      ],
+      "candidate_probabilities": [
+        0.07645951211452484,
+        0.9232523441314697,
+        7.355368870776147e-05,
+        0.0002146116748917848
+      ]
+    },
+    {
+      "name": "short_score_mixed",
+      "kind": "score",
+      "input_tokens": 85,
+      "max_abs_probability_delta": 0.006594419479370117,
+      "mean_abs_probability_delta": 0.0021984723765247813,
+      "total_variation_distance": 0.0065954171295743436,
+      "baseline_top_index": 3,
+      "candidate_top_index": 3,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.38074058294296265,
+      "baseline_value": 2.6791,
+      "candidate_value": 2.6855,
+      "returned_value_matches": false,
+      "baseline_probabilities": [
+        7.448912219842896e-05,
+        0.00887632928788662,
+        0.30440956354141235,
+        0.685150146484375,
+        0.0014434802578762174,
+        4.596007784130052e-05
+      ],
+      "candidate_probabilities": [
+        7.635990186827257e-05,
+        0.009028700180351734,
+        0.29781514406204224,
+        0.6915074586868286,
+        0.0015273455064743757,
+        4.496442124946043e-05
+      ],
+      "expected_score_delta": 0.006365951252519153
+    },
+    {
+      "name": "text_1024_bool_uncertain",
+      "kind": "noul",
+      "input_tokens": 1106,
+      "max_abs_probability_delta": 0.00026923418045043945,
+      "mean_abs_probability_delta": 0.00026916665956377983,
+      "total_variation_distance": 0.00026916665956377983,
+      "baseline_top_index": 0,
+      "candidate_top_index": 0,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.9914732654578984,
+      "baseline_value": false,
+      "candidate_value": false,
+      "returned_value_matches": true,
+      "baseline_probabilities": [
+        0.9957365989685059,
+        0.004263333510607481
+      ],
+      "candidate_probabilities": [
+        0.9960058331489563,
+        0.003994234371930361
+      ]
+    },
+    {
+      "name": "text_1024_bool_retracted",
+      "kind": "noul",
+      "input_tokens": 1102,
+      "max_abs_probability_delta": 0.0014801695942878723,
+      "mean_abs_probability_delta": 0.0014801658689975739,
+      "total_variation_distance": 0.0014801658689975739,
+      "baseline_top_index": 0,
+      "candidate_top_index": 0,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.9322565793991089,
+      "baseline_value": false,
+      "candidate_value": false,
+      "returned_value_matches": true,
+      "baseline_probabilities": [
+        0.9661282896995544,
+        0.03387171030044556
+      ],
+      "candidate_probabilities": [
+        0.9676084518432617,
+        0.032391540706157684
+      ]
+    },
+    {
+      "name": "text_1024_choice_blocked_login",
+      "kind": "choice",
+      "input_tokens": 1145,
+      "max_abs_probability_delta": 2.5966664907173254e-07,
+      "mean_abs_probability_delta": 1.1334543614793802e-07,
+      "total_variation_distance": 2.2669087229587603e-07,
+      "baseline_top_index": 3,
+      "candidate_top_index": 3,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.8565468303859234,
+      "baseline_value": "account_support",
+      "candidate_value": "account_support",
+      "returned_value_matches": true,
+      "baseline_probabilities": [
+        0.020884761586785316,
+        0.06128143146634102,
+        5.50007507627015e-06,
+        0.9178282618522644
+      ],
+      "candidate_probabilities": [
+        0.020884757861495018,
+        0.06128142029047012,
+        5.7597417253418826e-06,
+        0.9178280830383301
+      ]
+    },
+    {
+      "name": "text_1024_choice_purchase_repair",
+      "kind": "choice",
+      "input_tokens": 1143,
+      "max_abs_probability_delta": 0.0002632737159729004,
+      "mean_abs_probability_delta": 0.00013165251041868942,
+      "total_variation_distance": 0.00026330502083737883,
+      "baseline_top_index": 1,
+      "candidate_top_index": 1,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.9951621303334832,
+      "baseline_value": "technical_support",
+      "candidate_value": "technical_support",
+      "returned_value_matches": true,
+      "baseline_probabilities": [
+        0.000584209687076509,
+        0.9972881078720093,
+        0.002125977538526058,
+        1.7674472019280074e-06
+      ],
+      "candidate_probabilities": [
+        0.0005666658980771899,
+        0.9975513815879822,
+        0.0018803891725838184,
+        1.5632764416295686e-06
+      ]
+    },
+    {
+      "name": "text_1024_score_balanced",
+      "kind": "score",
+      "input_tokens": 1126,
+      "max_abs_probability_delta": 0.0057822465896606445,
+      "mean_abs_probability_delta": 0.0019275483615880755,
+      "total_variation_distance": 0.005782645084764226,
+      "baseline_top_index": 3,
+      "candidate_top_index": 3,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.5170747190713882,
+      "baseline_value": 2.7583,
+      "candidate_value": 2.7526,
+      "returned_value_matches": false,
+      "baseline_probabilities": [
+        4.0755832742433995e-05,
+        0.0032148021273314953,
+        0.23826859891414642,
+        0.7553433179855347,
+        0.0031219786033034325,
+        1.0515787835174706e-05
+      ],
+      "candidate_probabilities": [
+        4.440388147486374e-05,
+        0.003265571082010865,
+        0.24392274022102356,
+        0.749561071395874,
+        0.0031960634514689445,
+        1.0115366421814542e-05
+      ],
+      "expected_score_delta": -0.005693350914953044
+    },
+    {
+      "name": "text_1024_score_recovery",
+      "kind": "score",
+      "input_tokens": 1127,
+      "max_abs_probability_delta": 0.005748391151428223,
+      "mean_abs_probability_delta": 0.002121174571584561,
+      "total_variation_distance": 0.006363523714753683,
+      "baseline_top_index": 3,
+      "candidate_top_index": 3,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.49647459387779236,
+      "baseline_value": 2.7307,
+      "candidate_value": 2.723,
+      "returned_value_matches": false,
+      "baseline_probabilities": [
+        5.860621968167834e-05,
+        0.01805209368467331,
+        0.23950210213661194,
+        0.7359766960144043,
+        0.0063725668005645275,
+        3.788923640968278e-05
+      ],
+      "candidate_probabilities": [
+        6.188479892443866e-05,
+        0.018767500296235085,
+        0.2451469749212265,
+        0.7302283048629761,
+        0.005758916959166527,
+        3.6440775147639215e-05
+      ],
+      "expected_score_delta": -0.0077018629453959875
+    },
+    {
+      "name": "text_4096_bool_indirect",
+      "kind": "noul",
+      "input_tokens": 4181,
+      "max_abs_probability_delta": 0.0007181167602539062,
+      "mean_abs_probability_delta": 0.0007180869579315186,
+      "total_variation_distance": 0.0007180869579315186,
+      "baseline_top_index": 0,
+      "candidate_top_index": 0,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.7911814302206039,
+      "baseline_value": false,
+      "candidate_value": false,
+      "returned_value_matches": true,
+      "baseline_probabilities": [
+        0.8955907225608826,
+        0.10440929234027863
+      ],
+      "candidate_probabilities": [
+        0.8963088393211365,
+        0.1036912351846695
+      ]
+    },
+    {
+      "name": "text_4096_choice_competing_priority",
+      "kind": "choice",
+      "input_tokens": 4228,
+      "max_abs_probability_delta": 0.00042692385613918304,
+      "mean_abs_probability_delta": 0.0002215156564489007,
+      "total_variation_distance": 0.0004430313128978014,
+      "baseline_top_index": 3,
+      "candidate_top_index": 3,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.06063437461853027,
+      "baseline_value": "account_support",
+      "candidate_value": "account_support",
+      "returned_value_matches": true,
+      "baseline_probabilities": [
+        0.4622088670730591,
+        0.01387555431574583,
+        0.0010723465820774436,
+        0.5228432416915894
+      ],
+      "candidate_probabilities": [
+        0.4620009958744049,
+        0.014302478171885014,
+        0.0010884738294407725,
+        0.5226081013679504
+      ]
+    },
+    {
+      "name": "text_4096_score_uncertain",
+      "kind": "score",
+      "input_tokens": 4212,
+      "max_abs_probability_delta": 0.005587279796600342,
+      "mean_abs_probability_delta": 0.0018624883302891249,
+      "total_variation_distance": 0.005587464990867375,
+      "baseline_top_index": 3,
+      "candidate_top_index": 3,
+      "top_index_matches": true,
+      "baseline_top_two_margin": 0.5494730770587921,
+      "baseline_value": 2.7662,
+      "candidate_value": 2.7605,
+      "returned_value_matches": false,
+      "baseline_probabilities": [
+        2.567381670814939e-05,
+        0.00656051654368639,
+        0.22151419520378113,
+        0.7709872722625732,
+        0.0009050359949469566,
+        7.387053301499691e-06
+      ],
+      "candidate_probabilities": [
+        2.7125457563670352e-05,
+        0.006771465763449669,
+        0.22686392068862915,
+        0.7653999924659729,
+        0.0009302814723923802,
+        7.108691079338314e-06
+      ],
+      "expected_score_delta": -0.005751849101670814
+    }
+  ],
+  "publication": {
+    "source_report_sha256": "f7514185d315bd764900d476360245cf07d0b3183d07afdcf0678d2918044b0d",
+    "sanitization": "Local absolute paths replaced with symbolic runtime paths; process IDs and worker log paths removed. Timing, probability, correctness and memory measurements are unchanged.",
+    "pins": {
+      "model_repo": "nativ-community/JEV-27B-VL-MLX-8bit",
+      "model_revision": "a871d5f8787b3d8ce9d618e7260e959393030c7b",
+      "mlx_vlm_source": "https://github.com/Lazarus-931/mlx-vlm",
+      "mlx_vlm_revision": "597941d0d4eb900f1d066eba8d89abf474c0dd42",
+      "released_mlx_version": "0.32.4",
+      "native_mlx_base_revision": "36969c094354086e15d2a327a9c50feb20b9cf11",
+      "native_upstream_patch_revisions": [
+        "bb8189463b4c63474b0b069eb487f160fdc4cbdf",
+        "d03fed7b6965864b61c7c10fc48277e38c1a272f"
+      ]
+    },
+    "native_build_provenance": "m5-max-native-int8-build.json"
+  },
+  "probes": [
+    {
+      "name": "short_bool_conditional",
+      "synthetic_context_tokens": 0,
+      "state": "If the replacement cannot arrive before Friday, I will want a refund. Please tell me the delivery date before doing anything.",
+      "questions": {
+        "answer": {
+          "type": "bool",
+          "instructions": "Is the customer requesting a refund now, rather than asking about a possible future refund?"
+        }
+      },
+      "input_fingerprint": "29616179d7fede7b2ef03a6305563ccc89909b9582f4a0b6e4ac730322d6e74e",
+      "token_fingerprints": [
+        {
+          "kind": "noul",
+          "shape": [
+            1,
+            65
+          ],
+          "sha256": "66ae65b1a74fabf8c6f3977fe18333a83c7fc18191911f422ac7501b362bcc75"
+        }
+      ]
+    },
+    {
+      "name": "short_choice_two_needs",
+      "synthetic_context_tokens": 0,
+      "state": "The router fails every evening and my latest bill contains an extra charge. I need both problems fixed, and either one would help.",
+      "questions": {
+        "answer": {
+          "type": "choice",
+          "instructions": "Which team should handle this request first?",
+          "criteria": {
+            "billing": "payments, charges, and invoices",
+            "technical_support": "troubleshooting hardware, software, and connectivity",
+            "sales": "buying new products",
+            "account_support": "account access, password resets, and identity verification"
+          }
+        }
+      },
+      "input_fingerprint": "bedd21487ee39a302b0259c5e501dfbef2def8de93d3d2aedce6709f20ab7e92",
+      "token_fingerprints": [
+        {
+          "kind": "choice",
+          "shape": [
+            1,
+            100
+          ],
+          "sha256": "ef07c7c4dd8f31718aa45c11d51360414318c5af1d5025b388c2058fe20892bb"
+        }
+      ]
+    },
+    {
+      "name": "short_score_mixed",
+      "synthetic_context_tokens": 0,
+      "state": "The product is excellent when it works, but it stops working occasionally. The purchase feels neither clearly good nor clearly bad.",
+      "questions": {
+        "answer": {
+          "type": "score",
+          "instructions": "Rate the customer's overall satisfaction from 0 (extremely dissatisfied) to 5 (extremely satisfied), weighing both positive and negative comments.",
+          "criteria": [
+            "extremely dissatisfied",
+            "dissatisfied",
+            "slightly dissatisfied",
+            "slightly satisfied",
+            "satisfied",
+            "extremely satisfied"
+          ]
+        }
+      },
+      "input_fingerprint": "e415ebafca346f707448fab09e7b3f4f9b1ef704f6843f4bf24db4b20fb45e68",
+      "token_fingerprints": [
+        {
+          "kind": "score",
+          "shape": [
+            1,
+            85
+          ],
+          "sha256": "ac76ef1ddb0a869c8739ce58c96a956b1874e5f053d4a297544bc7e63b270de4"
+        }
+      ]
+    },
+    {
+      "name": "text_1024_bool_uncertain",
+      "synthetic_context_tokens": 1024,
+      "state": "Reference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves,\nEND REFERENCE NOTES.\nCustomer message: The parcel arrived damaged. I might accept a replacement, or I might prefer my money back. I have not decided; please explain what you can offer.",
+      "questions": {
+        "answer": {
+          "type": "bool",
+          "instructions": "Is the customer requesting a refund now, rather than asking about a possible future refund?"
+        }
+      },
+      "input_fingerprint": "e07a5225d4a41eea41927dec31721a5139e50df17a1981e9662450ae472456a0",
+      "token_fingerprints": [
+        {
+          "kind": "noul",
+          "shape": [
+            1,
+            1106
+          ],
+          "sha256": "98152bd854fca2da5ce00395c7c547b9fc282a824d81109f313b8925d039d4d5"
+        }
+      ]
+    },
+    {
+      "name": "text_1024_bool_retracted",
+      "synthetic_context_tokens": 1024,
+      "state": "Reference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves,\nEND REFERENCE NOTES.\nCustomer message: Yesterday I wrote that I wanted a refund. I am reconsidering because the product now works. Please pause the refund while I decide.",
+      "questions": {
+        "answer": {
+          "type": "bool",
+          "instructions": "Is the customer requesting a refund now, rather than asking about a possible future refund?"
+        }
+      },
+      "input_fingerprint": "dfd72cd9aafa6ed62210c1658c1ce0009ea05547e0945fad1e8a5499f1f534ea",
+      "token_fingerprints": [
+        {
+          "kind": "noul",
+          "shape": [
+            1,
+            1102
+          ],
+          "sha256": "88ddc7445423bb40430813500fad045f30b3c94afd3ac65fb42b59d1e57b16eb"
+        }
+      ]
+    },
+    {
+      "name": "text_1024_choice_blocked_login",
+      "synthetic_context_tokens": 1024,
+      "state": "Reference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves,\nEND REFERENCE NOTES.\nCustomer message: I cannot log in to view an unexpected charge, and the password reset email never arrives. I also need help reconnecting my device after a software update. Please help me get started.",
+      "questions": {
+        "answer": {
+          "type": "choice",
+          "instructions": "Which team should handle this request first?",
+          "criteria": {
+            "billing": "payments, charges, and invoices",
+            "technical_support": "troubleshooting hardware, software, and connectivity",
+            "sales": "buying new products",
+            "account_support": "account access, password resets, and identity verification"
+          }
+        }
+      },
+      "input_fingerprint": "bd8f0b274ee19c6019fcd8758b3624079f07ade200e2091a4d15b2aabeae0814",
+      "token_fingerprints": [
+        {
+          "kind": "choice",
+          "shape": [
+            1,
+            1145
+          ],
+          "sha256": "7e8af1c082b7711a8d283ad72d2607f79bb10a1ca55fd75c2223ff55b950d6b1"
+        }
+      ]
+    },
+    {
+      "name": "text_1024_choice_purchase_repair",
+      "synthetic_context_tokens": 1024,
+      "state": "Reference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves,\nEND REFERENCE NOTES.\nCustomer message: My current router disconnects repeatedly. I want to know whether troubleshooting could fix it or whether buying the new model is a better idea, and I need the total price explained.",
+      "questions": {
+        "answer": {
+          "type": "choice",
+          "instructions": "Which team should handle this request first?",
+          "criteria": {
+            "billing": "payments, charges, and invoices",
+            "technical_support": "troubleshooting hardware, software, and connectivity",
+            "sales": "buying new products",
+            "account_support": "account access, password resets, and identity verification"
+          }
+        }
+      },
+      "input_fingerprint": "ad5740c7f1e10a4ed6fa161aa8f0a5a8b3012a821f75d49bca653f51aa8ea8d0",
+      "token_fingerprints": [
+        {
+          "kind": "choice",
+          "shape": [
+            1,
+            1143
+          ],
+          "sha256": "d3c9c91c21f02eb21c8663065be1cadab972f9605e2c14c73ac00601ce044b1d"
+        }
+      ]
+    },
+    {
+      "name": "text_1024_score_balanced",
+      "synthetic_context_tokens": 1024,
+      "state": "Reference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves,\nEND REFERENCE NOTES.\nCustomer message: The screen and battery are excellent, but the keyboard sometimes fails and support has not replied. I still use it every day and remain undecided about recommending it.",
+      "questions": {
+        "answer": {
+          "type": "score",
+          "instructions": "Rate the customer's overall satisfaction from 0 (extremely dissatisfied) to 5 (extremely satisfied), weighing both positive and negative comments.",
+          "criteria": [
+            "extremely dissatisfied",
+            "dissatisfied",
+            "slightly dissatisfied",
+            "slightly satisfied",
+            "satisfied",
+            "extremely satisfied"
+          ]
+        }
+      },
+      "input_fingerprint": "547d258c61cce9f7f303283989c97cf52e2c0559f2be33d8e0b0a10f924c9735",
+      "token_fingerprints": [
+        {
+          "kind": "score",
+          "shape": [
+            1,
+            1126
+          ],
+          "sha256": "902542667c9f8f6c5dfaa6fc6e61b32652e09246ddd1e855462d1324467d47c7"
+        }
+      ]
+    },
+    {
+      "name": "text_1024_score_recovery",
+      "synthetic_context_tokens": 1024,
+      "state": "Reference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves,\nEND REFERENCE NOTES.\nCustomer message: The first unit was broken and the delay was frustrating. The replacement works very well and the staff were kind. I appreciate the resolution but still remember the inconvenience.",
+      "questions": {
+        "answer": {
+          "type": "score",
+          "instructions": "Rate the customer's overall satisfaction from 0 (extremely dissatisfied) to 5 (extremely satisfied), weighing both positive and negative comments.",
+          "criteria": [
+            "extremely dissatisfied",
+            "dissatisfied",
+            "slightly dissatisfied",
+            "slightly satisfied",
+            "satisfied",
+            "extremely satisfied"
+          ]
+        }
+      },
+      "input_fingerprint": "7590b49eca5623f15eb2ee03cc6a299f59622158f17fef7c53b25bf2afe7b176",
+      "token_fingerprints": [
+        {
+          "kind": "score",
+          "shape": [
+            1,
+            1127
+          ],
+          "sha256": "0aa8afbe9c50459ac1c28731f4f2dd20cbf59f1666e51dbbaf4d19cf4be74a8c"
+        }
+      ]
+    },
+    {
+      "name": "text_4096_bool_indirect",
+      "synthetic_context_tokens": 4096,
+      "state": "Reference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the\nEND REFERENCE NOTES.\nCustomer message: Keeping the item no longer makes sense, though I have not explicitly requested any action. What would happen if I returned it, and when would the money reach my account?",
+      "questions": {
+        "answer": {
+          "type": "bool",
+          "instructions": "Is the customer requesting a refund now, rather than asking about a possible future refund?"
+        }
+      },
+      "input_fingerprint": "c51908e3f7f3e81264f8e14c93b5dc16c3e6e1dc9a63ee7526c4526a1cc57fce",
+      "token_fingerprints": [
+        {
+          "kind": "noul",
+          "shape": [
+            1,
+            4181
+          ],
+          "sha256": "2a2ac8c11a9321e9077b8c3673b60d31d1d6d1e605d42a64c17414215070f0f7"
+        }
+      ]
+    },
+    {
+      "name": "text_4096_choice_competing_priority",
+      "synthetic_context_tokens": 4096,
+      "state": "Reference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the\nEND REFERENCE NOTES.\nCustomer message: I was charged twice for a router that will not connect. A replacement might solve it, but I also want to compare the upgraded model. I cannot access my account to see which charge belongs to which order. Please choose where to start.",
+      "questions": {
+        "answer": {
+          "type": "choice",
+          "instructions": "Which team should handle this request first?",
+          "criteria": {
+            "billing": "payments, charges, and invoices",
+            "technical_support": "troubleshooting hardware, software, and connectivity",
+            "sales": "buying new products",
+            "account_support": "account access, password resets, and identity verification"
+          }
+        }
+      },
+      "input_fingerprint": "861cbac5ea1f10dff53e551d2ba50b14b37dd43cc08f16ab02341a484bba9700",
+      "token_fingerprints": [
+        {
+          "kind": "choice",
+          "shape": [
+            1,
+            4228
+          ],
+          "sha256": "9422b6c54a1464bb88b66aaa337017e244851f5ab07c3d606ae72c676bdfa734"
+        }
+      ]
+    },
+    {
+      "name": "text_4096_score_uncertain",
+      "synthetic_context_tokens": 4096,
+      "state": "Reference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the shelves, recorded inventory counts, and updated the delivery calendar. No customer request appears in this reference note.\nReference note: Warehouse staff checked the\nEND REFERENCE NOTES.\nCustomer message: The device usually performs well and the price was fair. There have been several annoying problems, but none prevented me from finishing my work. Some days I feel happy with it and other days I wish I had chosen something else.",
+      "questions": {
+        "answer": {
+          "type": "score",
+          "instructions": "Rate the customer's overall satisfaction from 0 (extremely dissatisfied) to 5 (extremely satisfied), weighing both positive and negative comments.",
+          "criteria": [
+            "extremely dissatisfied",
+            "dissatisfied",
+            "slightly dissatisfied",
+            "slightly satisfied",
+            "satisfied",
+            "extremely satisfied"
+          ]
+        }
+      },
+      "input_fingerprint": "5d7d5ce1d1cf1cbdcaf4d685d8668d3030cea3ff532a258079f95b78c9ba2b07",
+      "token_fingerprints": [
+        {
+          "kind": "score",
+          "shape": [
+            1,
+            4212
+          ],
+          "sha256": "e5024174ae5afd1e1b7d9484ad0412d74d334b700dec9327270dfdf4f559a48e"
+        }
+      ]
+    }
+  ]
+}

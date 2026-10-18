@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "started_at": "2026-10-18T21:56:57.097074+00:00",
+  "mlx_version": "0.32.4.dev20261019+36969c09",
+  "mlx_metal_distribution_version": null,
+  "mlx_module_file": "$JEV_HOME/.venv-int8/lib/python3.12/site-packages/mlx/core.cpython-312-darwin.so",
+  "python_executable": "$JEV_HOME/.venv-int8/bin/python",
+  "macos": "26.6",
+  "device": {
+    "device_name": "Apple M5 Max",
+    "max_recommended_working_set_size": 115448725504,
+    "memory_size": 137438953472,
+    "architecture": "applegpu_g17s",
+    "max_buffer_length": 86586540032,
+    "resource_limit": 499000
+  },
+  "seed": 20261019,
+  "dtype": "bfloat16",
+  "weight_quantization": {
+    "mode": "affine",
+    "bits": 8,
+    "group_size": 64
+  },
+  "flag_values": [
+    "0",
+    "1"
+  ],
+  "previous_flag": null,
+  "relative_l2_tolerance": 0.05,
+  "method": "Fresh QMM operations built after setting MLX_QMM_INT8, fully evaluated before the next flag switch. Identical seeded tensors per comparison. Relative errors calculated in float32. This is a small kernel gate, not general model accuracy or probability calibration validation.",
+  "cases": [
+    {
+      "M": 43,
+      "N": 2048,
+      "K": 5120,
+      "expected_staged_eligible": false,
+      "all_finite": true,
+      "bitwise_identical": true,
+      "max_abs_error": 0.0,
+      "relative_l2_error": 0.0,
+      "within_relative_l2_tolerance": true,
+      "mlx_active_bytes": 13123732,
+      "mlx_peak_bytes": 75382880
+    },
+    {
+      "M": 76,
+      "N": 2048,
+      "K": 5120,
+      "expected_staged_eligible": true,
+      "all_finite": true,
+      "bitwise_identical": false,
+      "max_abs_error": 0.021484375,
+      "relative_l2_error": 0.01254461519420147,
+      "within_relative_l2_tolerance": true,
+      "mlx_active_bytes": 14581908,
+      "mlx_peak_bytes": 76398696
+    },
+    {
+      "M": 1076,
+      "N": 2048,
+      "K": 5120,
+      "expected_staged_eligible": true,
+      "all_finite": true,
+      "bitwise_identical": false,
+      "max_abs_error": 0.024169921875,
+      "relative_l2_error": 0.012626360170543194,
+      "within_relative_l2_tolerance": true,
+      "mlx_active_bytes": 59637908,
+      "mlx_peak_bytes": 107118696
+    },
+    {
+      "M": 76,
+      "N": 17408,
+      "K": 5120,
+      "expected_staged_eligible": true,
+      "all_finite": true,
+      "bitwise_identical": false,
+      "max_abs_error": 0.0234375,
+      "relative_l2_error": 0.012655217200517654,
+      "within_relative_l2_tolerance": true,
+      "mlx_active_bytes": 117997716,
+      "mlx_peak_bytes": 631816296
+    }
+  ],
+  "eligible_output_changed": true,
+  "passed": true,
+  "finished_at": "2026-10-18T21:56:57.157589+00:00",
+  "publication": {
+    "source_report_sha256": "642c8c948dfac6da90b38098b896a40c2aed3924bfbbf2ca91cb9a5e93eb3cd6",
+    "sanitization": "Local absolute paths replaced with symbolic runtime paths; process IDs and worker log paths removed. Timing, probability, correctness and memory measurements are unchanged.",
+    "pins": {
+      "model_repo": "nativ-community/JEV-27B-VL-MLX-8bit",
+      "model_revision": "a871d5f8787b3d8ce9d618e7260e959393030c7b",
+      "mlx_vlm_source": "https://github.com/Lazarus-931/mlx-vlm",
+      "mlx_vlm_revision": "597941d0d4eb900f1d066eba8d89abf474c0dd42",
+      "released_mlx_version": "0.32.4",
+      "native_mlx_base_revision": "36969c094354086e15d2a327a9c50feb20b9cf11",
+      "native_upstream_patch_revisions": [
+        "bb8189463b4c63474b0b069eb487f160fdc4cbdf",
+        "d03fed7b6965864b61c7c10fc48277e38c1a272f"
+      ]
+    },
+    "coverage_note": "The four QMM checks were recorded before the attention JIT caller fix. The fix changes attention template instantiation, not the tested matrix kernels. The complete paired full-model benchmark covers the final build, including text and image attention."
+  }
+}
