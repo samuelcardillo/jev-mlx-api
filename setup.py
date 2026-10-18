@@ -105,18 +105,39 @@ def install():
         run(PYTHON, "-c", code, manifest["repo"], manifest["revision"], MODEL)
     if missing_files():
         raise SystemExit("Model files did not match the pinned manifest after download. Rerun setup to resume.")
-    print("Pinned runtime, source, and model are installed. Ready to serve.", flush=True)
+    print("Pinned released runtime, source, and model are installed.", flush=True)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.parse_args()
+    parser.add_argument("--runtime", choices=("auto", "stock", "int8"),
+                        default=os.environ.get("JEV_RUNTIME", "auto"),
+                        help="auto builds the tested INT8 runtime on supported M5 Macs; stock keeps released MLX")
+    args = parser.parse_args()
+    if args.runtime not in ("auto", "stock", "int8"):
+        parser.error("JEV_RUNTIME must be auto, stock, or int8 during setup.")
     if platform.system() != "Darwin" or platform.machine() != "arm64":
         raise SystemExit("This recipe requires an Apple Silicon Mac.")
     INSTALL.mkdir(parents=True, exist_ok=True)
     with (INSTALL / "setup.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
+        from native_build import install_native, support_reason
+        from runtime import save_selection
+        selected = args.runtime
+        reason = support_reason() if selected != "stock" else None
+        if selected == "int8" and reason:
+            raise SystemExit("INT8 is unavailable: " + reason + " Use ./recipe --runtime stock for released MLX.")
+        if selected == "auto":
+            selected = "stock" if reason else "int8"
+            if reason:
+                print("Using released MLX: " + reason, flush=True)
         install()
+        try:
+            metadata = install_native(UV, PYTHON, SOURCE, INSTALL) if selected == "int8" else None
+        except (RuntimeError, OSError, subprocess.SubprocessError) as exc:
+            raise SystemExit("INT8 setup failed: " + str(exc) + "\nThe released runtime is preserved. Use ./recipe --runtime stock to select it.")
+        save_selection(selected, metadata)
+        print("Selected inference runtime: " + selected, flush=True)
 
 
 if __name__ == "__main__":

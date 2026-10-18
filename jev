@@ -6,4 +6,4 @@ if [[ ! -x "$JEV_PYTHON" ]]; then
   print -u2 'Runtime is not installed. Run ./recipe first.'
   exit 1
 fi
-exec "$JEV_PYTHON" "$SCRIPT_DIR/run.py" "$@"
+exec "$JEV_PYTHON" "$SCRIPT_DIR/runtime.py" "$@"

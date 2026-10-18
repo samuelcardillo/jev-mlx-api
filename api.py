@@ -5,6 +5,7 @@ import binascii
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 import io
+from importlib.metadata import version
 import json
 import logging
 import math
@@ -26,6 +27,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 MODEL_ID = "nativ-community/JEV-27B-VL-MLX-8bit"
+MLX_VERSION = version("mlx")
 MAX_BODY_BYTES = 16 * 1024 * 1024
 MAX_IMAGE_BYTES = 8 * 1024 * 1024
 MAX_INPUT_TOKENS = 16384
@@ -227,7 +229,9 @@ async def health():
     return {"status": "ready" if engine.ready else "loading", "service": "local-jev-mlx", "model": MODEL_ID,
             "device": getattr(engine, "device", None), "model_memory_bytes": getattr(engine, "model_memory_bytes", None),
             "model_revision": getattr(engine, "revision", None), "pending_requests": engine.pending,
-            "uptime_seconds": time.time() - engine.started, "max_input_tokens": MAX_INPUT_TOKENS}
+            "uptime_seconds": time.time() - engine.started, "max_input_tokens": MAX_INPUT_TOKENS,
+            "mlx_version": MLX_VERSION, "mlx_qmm_int8": os.environ.get("MLX_QMM_INT8", "0"),
+            "runtime": os.environ.get("JEV_ACTIVE_RUNTIME", "custom")}
 
 
 @app.get("/v1/models")
