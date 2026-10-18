@@ -1,0 +1,79 @@
+{
+  "repo": "nativ-community/JEV-27B-VL-MLX-8bit",
+  "revision": "a871d5f8787b3d8ce9d618e7260e959393030c7b",
+  "files": [
+    {
+      "name": ".gitattributes",
+      "size": 1570
+    },
+    {
+      "name": "README.md",
+      "size": 1596
+    },
+    {
+      "name": "chat_template.jinja",
+      "size": 8952
+    },
+    {
+      "name": "config.json",
+      "size": 6741
+    },
+    {
+      "name": "generation_config.json",
+      "size": 202
+    },
+    {
+      "name": "model-00001-of-00006.safetensors",
+      "size": 5317707581
+    },
+    {
+      "name": "model-00002-of-00006.safetensors",
+      "size": 5354102610
+    },
+    {
+      "name": "model-00003-of-00006.safetensors",
+      "size": 5354184694
+    },
+    {
+      "name": "model-00004-of-00006.safetensors",
+      "size": 5337309653
+    },
+    {
+      "name": "model-00005-of-00006.safetensors",
+      "size": 5292848464
+    },
+    {
+      "name": "model-00006-of-00006.safetensors",
+      "size": 4037001250
+    },
+    {
+      "name": "model.safetensors.index.json",
+      "size": 218127
+    },
+    {
+      "name": "preprocessor_config.json",
+      "size": 390
+    },
+    {
+      "name": "processor_config.json",
+      "size": 991
+    },
+    {
+      "name": "tokenizer.json",
+      "size": 19989325
+    },
+    {
+      "name": "tokenizer_config.json",
+      "size": 1481
+    },
+    {
+      "name": "video_preprocessor_config.json",
+      "size": 385
+    },
+    {
+      "name": "vocab.json",
+      "size": 6722759
+    }
+  ],
+  "total_bytes": 30720106771
+}

@@ -1,0 +1,9 @@
+#!/bin/zsh
+set -eu
+SCRIPT_DIR="${0:A:h}"
+JEV_PYTHON="$(/usr/bin/python3 "$SCRIPT_DIR/paths.py" --python)"
+if [[ ! -x "$JEV_PYTHON" ]]; then
+  print -u2 'Runtime is not installed. Run ./recipe first.'
+  exit 1
+fi
+exec "$JEV_PYTHON" "$SCRIPT_DIR/server_control.py" "$@"

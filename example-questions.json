@@ -1,0 +1,6 @@
+{
+  "refund": {
+    "type": "bool",
+    "instructions": "Is the customer asking for a refund?"
+  }
+}

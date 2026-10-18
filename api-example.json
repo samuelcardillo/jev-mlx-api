@@ -1,0 +1,6 @@
+{
+  "kind": "choice",
+  "state": "My credit card was charged twice for the same purchase.",
+  "question": "Which department should handle this request?",
+  "options": ["billing", "shipping", "technical support"]
+}

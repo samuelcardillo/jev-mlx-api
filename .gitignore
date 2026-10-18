@@ -1,0 +1,32 @@
+# All installation state, caches, model weights, logs, and generated results.
+.jev/
+.venv/
+venv/
+model/
+models/
+cache/
+mlx-vlm/
+*.safetensors
+*.bin
+*.gguf
+*.pt
+*.pth
+*.onnx
+*.log
+*.pid
+api-process.json
+api-control.lock
+api-test-results.json
+benchmark-results.json
+
+# Python and local tooling.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+.env
+.env.*
+!.env.example
