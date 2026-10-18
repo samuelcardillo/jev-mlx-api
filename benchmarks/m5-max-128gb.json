@@ -1,0 +1,1064 @@
+{
+  "device": {
+    "device_name": "Apple M5 Max",
+    "max_recommended_working_set_size": 115448725504,
+    "memory_size": 137438953472,
+    "architecture": "applegpu_g17s",
+    "max_buffer_length": 86586540032,
+    "resource_limit": 499000
+  },
+  "macos": "26.6",
+  "python": "3.12.15",
+  "versions": {
+    "mlx": "0.32.4",
+    "mlx-vlm": "0.7.7",
+    "transformers": "5.20.1",
+    "huggingface-hub": "2.2.0"
+  },
+  "source_commit": "597941d0d4eb900f1d066eba8d89abf474c0dd42",
+  "model_repo": "nativ-community/JEV-27B-VL-MLX-8bit",
+  "model_revision": "a871d5f8787b3d8ce9d618e7260e959393030c7b",
+  "load_seconds": 1.4335341249825433,
+  "after_load_memory": {
+    "mlx_active_bytes": 30693543400,
+    "mlx_peak_bytes": 30693543400,
+    "mlx_cache_bytes": 18548,
+    "process_peak_rss_bytes": 31252299776
+  },
+  "method": "One warmup and repeated measured calls per case; one question per call; explicit GPU synchronization; no cross-request KV/prefix cache. Timings include tokenization, image preprocessing, inference, and probability readout. Images are preloaded. Token throughput measures input processing, not generation. Synthetic correctness checks are not a general accuracy evaluation.",
+  "measured_repeats": 3,
+  "final_memory": {
+    "mlx_active_bytes": 30693543422,
+    "mlx_peak_bytes": 31926274012,
+    "mlx_cache_bytes": 7726443123,
+    "process_peak_rss_bytes": 31324536832
+  },
+  "date": "2026-10-19",
+  "power_source": "AC",
+  "swap_used_bytes_before": 0,
+  "swap_used_bytes_after": 0,
+  "cases": [
+    {
+      "name": "short_refund_yes",
+      "questions": {
+        "answer": {
+          "type": "bool",
+          "instructions": "Is the customer asking for a refund?"
+        }
+      },
+      "expected": true,
+      "warmup": {
+        "seconds": 1.5979747500095982,
+        "result": {
+          "model": "jev",
+          "answers": {
+            "answer": {
+              "type": "bool",
+              "value": true,
+              "probability": 0.9825
+            }
+          },
+          "usage": {
+            "input_tokens": 43,
+            "output_tokens": 0
+          }
+        },
+        "memory": {
+          "mlx_active_bytes": 30693543402,
+          "mlx_peak_bytes": 30806258641,
+          "mlx_cache_bytes": 123035070,
+          "process_peak_rss_bytes": 31252299776
+        }
+      },
+      "runs": [
+        {
+          "seconds": 0.14548899998771958,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9825
+              }
+            },
+            "usage": {
+              "input_tokens": 43,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 30806253137,
+            "mlx_cache_bytes": 123043334,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 0.14208366599632427,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9825
+              }
+            },
+            "usage": {
+              "input_tokens": 43,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 30806253137,
+            "mlx_cache_bytes": 123043334,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 0.14290050001000054,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9825
+              }
+            },
+            "usage": {
+              "input_tokens": 43,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 30806253137,
+            "mlx_cache_bytes": 123043334,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        }
+      ],
+      "median_seconds": 0.14290050001000054,
+      "min_seconds": 0.14208366599632427,
+      "max_seconds": 0.14548899998771958,
+      "input_tokens": 43,
+      "all_correct": true,
+      "peak_mlx_bytes": 30806253137,
+      "input_tokens_per_second": 300.90867419631667
+    },
+    {
+      "name": "short_refund_no",
+      "questions": {
+        "answer": {
+          "type": "bool",
+          "instructions": "Is the customer asking for a refund?"
+        }
+      },
+      "expected": false,
+      "warmup": {
+        "seconds": 0.14713624998694286,
+        "result": {
+          "model": "jev",
+          "answers": {
+            "answer": {
+              "type": "bool",
+              "value": false,
+              "probability": 0.0041
+            }
+          },
+          "usage": {
+            "input_tokens": 50,
+            "output_tokens": 0
+          }
+        },
+        "memory": {
+          "mlx_active_bytes": 30693543402,
+          "mlx_peak_bytes": 30824165166,
+          "mlx_cache_bytes": 211660470,
+          "process_peak_rss_bytes": 31252299776
+        }
+      },
+      "runs": [
+        {
+          "seconds": 0.14786195798660628,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": false,
+                "probability": 0.0041
+              }
+            },
+            "usage": {
+              "input_tokens": 50,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 30824672664,
+            "mlx_cache_bytes": 212194998,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 0.14848037500632927,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": false,
+                "probability": 0.0041
+              }
+            },
+            "usage": {
+              "input_tokens": 50,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 30824672664,
+            "mlx_cache_bytes": 212194998,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 0.14739270799327642,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": false,
+                "probability": 0.0041
+              }
+            },
+            "usage": {
+              "input_tokens": 50,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 30824672664,
+            "mlx_cache_bytes": 212194998,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        }
+      ],
+      "median_seconds": 0.14786195798660628,
+      "min_seconds": 0.14739270799327642,
+      "max_seconds": 0.14848037500632927,
+      "input_tokens": 50,
+      "all_correct": true,
+      "peak_mlx_bytes": 30824672664,
+      "input_tokens_per_second": 338.15323887790754
+    },
+    {
+      "name": "short_topic_choice",
+      "questions": {
+        "answer": {
+          "type": "choice",
+          "instructions": "Which team should handle this request?",
+          "criteria": {
+            "billing": "payments, charges, and invoices",
+            "technical_support": "troubleshooting hardware, software, and connectivity",
+            "sales": "buying new products"
+          }
+        }
+      },
+      "expected": "technical_support",
+      "warmup": {
+        "seconds": 0.19159266698989086,
+        "result": {
+          "model": "jev",
+          "answers": {
+            "answer": {
+              "type": "choice",
+              "value": "technical_support",
+              "probabilities": {
+                "billing": 0.0,
+                "technical_support": 1.0,
+                "sales": 0.0
+              },
+              "metadata": {
+                "confidence": 1.0
+              }
+            }
+          },
+          "usage": {
+            "input_tokens": 76,
+            "output_tokens": 0
+          }
+        },
+        "memory": {
+          "mlx_active_bytes": 30693543402,
+          "mlx_peak_bytes": 30839629244,
+          "mlx_cache_bytes": 322378258,
+          "process_peak_rss_bytes": 31252299776
+        }
+      },
+      "runs": [
+        {
+          "seconds": 0.19161216699285433,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "choice",
+                "value": "technical_support",
+                "probabilities": {
+                  "billing": 0.0,
+                  "technical_support": 1.0,
+                  "sales": 0.0
+                },
+                "metadata": {
+                  "confidence": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 76,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 30839629200,
+            "mlx_cache_bytes": 322378258,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 0.1913746249920223,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "choice",
+                "value": "technical_support",
+                "probabilities": {
+                  "billing": 0.0,
+                  "technical_support": 1.0,
+                  "sales": 0.0
+                },
+                "metadata": {
+                  "confidence": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 76,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 30839629200,
+            "mlx_cache_bytes": 322378258,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 0.1919204999867361,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "choice",
+                "value": "technical_support",
+                "probabilities": {
+                  "billing": 0.0,
+                  "technical_support": 1.0,
+                  "sales": 0.0
+                },
+                "metadata": {
+                  "confidence": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 76,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 30839629200,
+            "mlx_cache_bytes": 322378258,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        }
+      ],
+      "median_seconds": 0.19161216699285433,
+      "min_seconds": 0.1913746249920223,
+      "max_seconds": 0.1919204999867361,
+      "input_tokens": 76,
+      "all_correct": true,
+      "peak_mlx_bytes": 30839629200,
+      "input_tokens_per_second": 396.6345206191119
+    },
+    {
+      "name": "text_1024_token_context",
+      "questions": {
+        "answer": {
+          "type": "bool",
+          "instructions": "Is the customer asking for a refund?"
+        }
+      },
+      "expected": true,
+      "synthetic_context_tokens": 1024,
+      "warmup": {
+        "seconds": 1.3574172079970594,
+        "result": {
+          "model": "jev",
+          "answers": {
+            "answer": {
+              "type": "bool",
+              "value": true,
+              "probability": 0.9981
+            }
+          },
+          "usage": {
+            "input_tokens": 1076,
+            "output_tokens": 0
+          }
+        },
+        "memory": {
+          "mlx_active_bytes": 30693543402,
+          "mlx_peak_bytes": 31302203052,
+          "mlx_cache_bytes": 1083906578,
+          "process_peak_rss_bytes": 31252299776
+        }
+      },
+      "runs": [
+        {
+          "seconds": 1.2818473750085104,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9981
+              }
+            },
+            "usage": {
+              "input_tokens": 1076,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 31302203052,
+            "mlx_cache_bytes": 1083906578,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 1.24618354201084,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9981
+              }
+            },
+            "usage": {
+              "input_tokens": 1076,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 31302203052,
+            "mlx_cache_bytes": 1083906578,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 1.42494974998408,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9981
+              }
+            },
+            "usage": {
+              "input_tokens": 1076,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 31302203052,
+            "mlx_cache_bytes": 1083906578,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        }
+      ],
+      "median_seconds": 1.2818473750085104,
+      "min_seconds": 1.24618354201084,
+      "max_seconds": 1.42494974998408,
+      "input_tokens": 1076,
+      "all_correct": true,
+      "peak_mlx_bytes": 31302203052,
+      "input_tokens_per_second": 839.413506614121
+    },
+    {
+      "name": "text_4096_token_context",
+      "questions": {
+        "answer": {
+          "type": "bool",
+          "instructions": "Is the customer asking for a refund?"
+        }
+      },
+      "expected": true,
+      "synthetic_context_tokens": 4096,
+      "warmup": {
+        "seconds": 5.5276566249958705,
+        "result": {
+          "model": "jev",
+          "answers": {
+            "answer": {
+              "type": "bool",
+              "value": true,
+              "probability": 0.9979
+            }
+          },
+          "usage": {
+            "input_tokens": 4148,
+            "output_tokens": 0
+          }
+        },
+        "memory": {
+          "mlx_active_bytes": 30693543402,
+          "mlx_peak_bytes": 31781196076,
+          "mlx_cache_bytes": 2610649618,
+          "process_peak_rss_bytes": 31252299776
+        }
+      },
+      "runs": [
+        {
+          "seconds": 5.256026832998032,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9979
+              }
+            },
+            "usage": {
+              "input_tokens": 4148,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 31781196076,
+            "mlx_cache_bytes": 2610649618,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 5.353831375017762,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9979
+              }
+            },
+            "usage": {
+              "input_tokens": 4148,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 31781196076,
+            "mlx_cache_bytes": 2610649618,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 5.525785250007175,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9979
+              }
+            },
+            "usage": {
+              "input_tokens": 4148,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 31781196076,
+            "mlx_cache_bytes": 2610649618,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        }
+      ],
+      "median_seconds": 5.353831375017762,
+      "min_seconds": 5.256026832998032,
+      "max_seconds": 5.525785250007175,
+      "input_tokens": 4148,
+      "all_correct": true,
+      "peak_mlx_bytes": 31781196076,
+      "input_tokens_per_second": 774.7722536342001
+    },
+    {
+      "name": "text_8192_token_context",
+      "questions": {
+        "answer": {
+          "type": "bool",
+          "instructions": "Is the customer asking for a refund?"
+        }
+      },
+      "expected": true,
+      "synthetic_context_tokens": 8192,
+      "warmup": {
+        "seconds": 11.69607950001955,
+        "result": {
+          "model": "jev",
+          "answers": {
+            "answer": {
+              "type": "bool",
+              "value": true,
+              "probability": 0.9981
+            }
+          },
+          "usage": {
+            "input_tokens": 8244,
+            "output_tokens": 0
+          }
+        },
+        "memory": {
+          "mlx_active_bytes": 30693543402,
+          "mlx_peak_bytes": 32382128428,
+          "mlx_cache_bytes": 5089335826,
+          "process_peak_rss_bytes": 31252299776
+        }
+      },
+      "runs": [
+        {
+          "seconds": 11.678000457992312,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9981
+              }
+            },
+            "usage": {
+              "input_tokens": 8244,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 32382128428,
+            "mlx_cache_bytes": 5089335826,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 11.869680792005965,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9981
+              }
+            },
+            "usage": {
+              "input_tokens": 8244,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 32382128428,
+            "mlx_cache_bytes": 5089335826,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 11.984638459020061,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "bool",
+                "value": true,
+                "probability": 0.9981
+              }
+            },
+            "usage": {
+              "input_tokens": 8244,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543402,
+            "mlx_peak_bytes": 32382128428,
+            "mlx_cache_bytes": 5089335826,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        }
+      ],
+      "median_seconds": 11.869680792005965,
+      "min_seconds": 11.678000457992312,
+      "max_seconds": 11.984638459020061,
+      "input_tokens": 8244,
+      "all_correct": true,
+      "peak_mlx_bytes": 32382128428,
+      "input_tokens_per_second": 694.5426877487891
+    },
+    {
+      "name": "vision_512x512",
+      "questions": {
+        "answer": {
+          "type": "choice",
+          "instructions": "Which shape is on the left side of the image?",
+          "criteria": [
+            "red square",
+            "blue circle",
+            "green triangle"
+          ]
+        }
+      },
+      "expected": "red square",
+      "image_size": [
+        512,
+        512
+      ],
+      "warmup": {
+        "seconds": 1.7376344169897493,
+        "result": {
+          "model": "jev",
+          "answers": {
+            "answer": {
+              "type": "choice",
+              "value": "red square",
+              "probabilities": {
+                "red square": 1.0,
+                "blue circle": 0.0,
+                "green triangle": 0.0
+              },
+              "metadata": {
+                "confidence": 1.0
+              }
+            }
+          },
+          "usage": {
+            "input_tokens": 308,
+            "output_tokens": 0
+          }
+        },
+        "memory": {
+          "mlx_active_bytes": 30693543420,
+          "mlx_peak_bytes": 32382128428,
+          "mlx_cache_bytes": 6525642611,
+          "process_peak_rss_bytes": 31252299776
+        }
+      },
+      "runs": [
+        {
+          "seconds": 0.45031833299435675,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "choice",
+                "value": "red square",
+                "probabilities": {
+                  "red square": 1.0,
+                  "blue circle": 0.0,
+                  "green triangle": 0.0
+                },
+                "metadata": {
+                  "confidence": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 308,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543420,
+            "mlx_peak_bytes": 31721235634,
+            "mlx_cache_bytes": 6525642613,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 0.4521920830011368,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "choice",
+                "value": "red square",
+                "probabilities": {
+                  "red square": 1.0,
+                  "blue circle": 0.0,
+                  "green triangle": 0.0
+                },
+                "metadata": {
+                  "confidence": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 308,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543420,
+            "mlx_peak_bytes": 31721235634,
+            "mlx_cache_bytes": 6525642613,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        },
+        {
+          "seconds": 0.45849179101060145,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "choice",
+                "value": "red square",
+                "probabilities": {
+                  "red square": 1.0,
+                  "blue circle": 0.0,
+                  "green triangle": 0.0
+                },
+                "metadata": {
+                  "confidence": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 308,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543420,
+            "mlx_peak_bytes": 31721235634,
+            "mlx_cache_bytes": 6525642613,
+            "process_peak_rss_bytes": 31252299776
+          },
+          "correct": true
+        }
+      ],
+      "median_seconds": 0.4521920830011368,
+      "min_seconds": 0.45031833299435675,
+      "max_seconds": 0.45849179101060145,
+      "input_tokens": 308,
+      "all_correct": true,
+      "peak_mlx_bytes": 31721235634,
+      "input_tokens_per_second": 681.126476067087
+    },
+    {
+      "name": "vision_1024x1024",
+      "questions": {
+        "answer": {
+          "type": "choice",
+          "instructions": "Which shape is on the left side of the image?",
+          "criteria": [
+            "red square",
+            "blue circle",
+            "green triangle"
+          ]
+        }
+      },
+      "expected": "red square",
+      "image_size": [
+        1024,
+        1024
+      ],
+      "warmup": {
+        "seconds": 1.5238414999912493,
+        "result": {
+          "model": "jev",
+          "answers": {
+            "answer": {
+              "type": "choice",
+              "value": "red square",
+              "probabilities": {
+                "red square": 1.0,
+                "blue circle": 0.0,
+                "green triangle": 0.0
+              },
+              "metadata": {
+                "confidence": 1.0
+              }
+            }
+          },
+          "usage": {
+            "input_tokens": 1076,
+            "output_tokens": 0
+          }
+        },
+        "memory": {
+          "mlx_active_bytes": 30693543422,
+          "mlx_peak_bytes": 31926274012,
+          "mlx_cache_bytes": 7707568755,
+          "process_peak_rss_bytes": 31299207168
+        }
+      },
+      "runs": [
+        {
+          "seconds": 1.5325142919900827,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "choice",
+                "value": "red square",
+                "probabilities": {
+                  "red square": 1.0,
+                  "blue circle": 0.0,
+                  "green triangle": 0.0
+                },
+                "metadata": {
+                  "confidence": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 1076,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543422,
+            "mlx_peak_bytes": 31926274012,
+            "mlx_cache_bytes": 7726443123,
+            "process_peak_rss_bytes": 31324454912
+          },
+          "correct": true
+        },
+        {
+          "seconds": 1.6047101659933105,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "choice",
+                "value": "red square",
+                "probabilities": {
+                  "red square": 1.0,
+                  "blue circle": 0.0,
+                  "green triangle": 0.0
+                },
+                "metadata": {
+                  "confidence": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 1076,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543422,
+            "mlx_peak_bytes": 31926274012,
+            "mlx_cache_bytes": 7726443123,
+            "process_peak_rss_bytes": 31324520448
+          },
+          "correct": true
+        },
+        {
+          "seconds": 1.6466482910036575,
+          "result": {
+            "model": "jev",
+            "answers": {
+              "answer": {
+                "type": "choice",
+                "value": "red square",
+                "probabilities": {
+                  "red square": 1.0,
+                  "blue circle": 0.0,
+                  "green triangle": 0.0
+                },
+                "metadata": {
+                  "confidence": 1.0
+                }
+              }
+            },
+            "usage": {
+              "input_tokens": 1076,
+              "output_tokens": 0
+            }
+          },
+          "memory": {
+            "mlx_active_bytes": 30693543422,
+            "mlx_peak_bytes": 31926274012,
+            "mlx_cache_bytes": 7726443123,
+            "process_peak_rss_bytes": 31324536832
+          },
+          "correct": true
+        }
+      ],
+      "median_seconds": 1.6047101659933105,
+      "min_seconds": 1.5325142919900827,
+      "max_seconds": 1.6466482910036575,
+      "input_tokens": 1076,
+      "all_correct": true,
+      "peak_mlx_bytes": 31926274012,
+      "input_tokens_per_second": 670.5260693191655
+    }
+  ]
+}
